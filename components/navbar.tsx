@@ -8,6 +8,7 @@ import { useT } from "./i18n-provider";
 import { LanguageSwitcher } from "./language-switcher";
 import { ThemeToggle } from "./theme-toggle";
 import { activeSectionStore } from "@/lib/active-section";
+import { terminalStore } from "@/lib/terminal-store";
 import { Menu, X, ChevronDown, TerminalSquare } from "lucide-react";
 
 const navItems = [
@@ -168,6 +169,14 @@ export function Navbar() {
           </ul>
 
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => terminalStore.toggle()}
+              className="p-2 text-text-secondary hover:text-text-brand transition-colors"
+              aria-label="Toggle visitor terminal"
+            >
+              <TerminalSquare size={18} />
+            </button>
             <ThemeToggle />
             <LanguageSwitcher />
             <button

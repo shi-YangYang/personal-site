@@ -20,6 +20,7 @@ const bootLines: Record<Locale, BootLine[]> = {
     { text: "今天也是元气满满的一天呢", level: "ok" },
     { text: "确认世界和平,服务器没崩", level: "ok" },
     { text: "开始干活! ▊", level: "cmd" },
+    { text: "tip: 按 ~ 或 ⌘K 唤出访客终端,和这台机器对话", level: "dim" },
   ],
   en: [
     { text: "self-check: is it Monday again?", level: "dim" },
@@ -30,8 +31,11 @@ const bootLines: Record<Locale, BootLine[]> = {
     { text: "feeling extra productive today", level: "ok" },
     { text: "confirmed: world peace, servers alive", level: "ok" },
     { text: "let's ship! ▊", level: "cmd" },
+    { text: "tip: press ~ or ⌘K to summon the visitor terminal", level: "dim" },
   ],
 };
+
+export { bootLines };
 
 const windowTitles: Record<Locale, string> = {
   zh: "开发者摸鱼终端",
@@ -70,6 +74,17 @@ export function BootLoader() {
     return () => clearTimeout(hide);
   }, [step, lines.length]);
 
+  useEffect(() => {
+    if (!visible) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" || e.key === "Enter" || e.key === " ") {
+        setVisible(false);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [visible]);
+
   return (
     <AnimatePresence>
       {visible && (
@@ -77,7 +92,8 @@ export function BootLoader() {
           initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.45 } }}
-          className="fixed inset-0 z-[100] bg-bg-base flex items-center justify-center px-6"
+          onClick={() => setVisible(false)}
+          className="fixed inset-0 z-[100] bg-bg-base flex items-center justify-center px-6 cursor-default"
         >
           <motion.div
             initial={{ opacity: 0, y: 12, scale: 0.98 }}
@@ -116,6 +132,9 @@ export function BootLoader() {
               )}
             </div>
           </motion.div>
+          <span className="absolute bottom-5 left-1/2 -translate-x-1/2 font-mono text-[10px] text-text-muted">
+            {locale === "zh" ? "点击任意处跳过" : "click anywhere to skip"}
+          </span>
         </motion.div>
       )}
     </AnimatePresence>

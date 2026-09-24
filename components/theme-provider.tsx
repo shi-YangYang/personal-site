@@ -9,6 +9,7 @@ const STORAGE_KEY = "theme";
 type ThemeContextValue = {
   theme: Theme;
   toggle: () => void;
+  set: (theme: Theme) => void;
 };
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
@@ -47,8 +48,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setTheme((t) => (t === "dark" ? "light" : "dark"));
   }, []);
 
+  const set = useCallback((t: Theme) => {
+    setTheme(t);
+  }, []);
+
   return (
-    <ThemeContext.Provider value={{ theme, toggle }}>
+    <ThemeContext.Provider value={{ theme, toggle, set }}>
       {children}
     </ThemeContext.Provider>
   );
