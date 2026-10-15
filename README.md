@@ -3,7 +3,7 @@
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](./LICENSE)
 
-一个现代、快速、**中英双语**的个人作品集 + 博客模板，基于 **Next.js 16 + React 19 + Tailwind CSS 4**。暗色赛博绿风格：毛玻璃、3D 特效、MDX 博客、后台管理、Docker 一键自部署。
+一个现代、快速、**中英双语**的个人作品集 + 博客模板，基于 **Next.js 16 + React 19 + Tailwind CSS 4**。暗色赛博绿风格：毛玻璃、3D 特效、访客终端、MDX 博客、后台管理、Docker 一键自部署。
 
 ## 目录
 
@@ -100,6 +100,22 @@ ADMIN_PASSWORD=your-strong-password
 
 未配置 `ADMIN_PASSWORD` 时后台自动禁用，不影响前台展示。
 
+### 访客终端
+
+全站任意页面按 `~`（或 `⌘K`，或点导航栏终端图标）唤出访客终端——一个接了真实数据的 shell，不是装饰：
+
+| 命令 | 作用 |
+|------|------|
+| `help` | 列出全部命令（彩蛋不止一个） |
+| `ls blog` / `ls projects` / `ls socials` | 看文章 / 项目 / 友链清单 |
+| `open <slug>` / `cd contact` | 跳转文章、项目详情或页面区块 |
+| `cat about` / `cat resume` / `cat contact` | 读简介、git log 风格的经历、联系方式 |
+| `views [slug]` | 查真实阅读量（`/api/views` 接口） |
+| `theme light` / `lang en` | 切主题、切语言 |
+| `sudo hire-me` | 直达联系区块 |
+
+首次打开会重播开机日志；`Esc` 关闭，`↑↓` 翻历史，`Tab` 补全，状态跨页面保持。
+
 ### 后台管理
 
 访问 `/admin` 登录后台，三个标签页：
@@ -107,7 +123,7 @@ ADMIN_PASSWORD=your-strong-password
 | 标签 | 功能 |
 |------|------|
 | 博客文章 | 在线发布/编辑文章，支持中英双语、Markdown 表情短代码、标签逐个添加 |
-| 个人信息 | 在线修改姓名、简介、社交链接、技能、经历、项目、友链（中英双语分开维护） |
+| 个人信息 | 在线修改站点标题、姓名、简介、社交链接、技能、经历、项目、友链（中英双语分开维护） |
 | 邮件通知 | 配置 SMTP，访客留言自动发送到你的邮箱 |
 
 所有修改保存后通过 `revalidatePath` 即时刷新前台，无需重启。
@@ -121,6 +137,10 @@ ADMIN_PASSWORD=your-strong-password
 #### UI 文案
 
 编辑 `messages/zh.json` 和 `messages/en.json`，用于导航、按钮、表单标签等。
+
+#### 站点图标
+
+把 `favicon.ico` / `favicon.png` / `favicon.svg` / `icon.png` 任一放进 `data/` 目录（已 gitignore），`/api/favicon` 会动态读取，无需重建。
 
 #### 主题配色
 
@@ -198,6 +218,8 @@ docker compose down
 - `site-content` → `/app/content`（博客文章）
 - `site-data` → `/app/data`（个人信息 JSON + 阅读量 + 邮件配置）
 
+推送到 `main` 会自动触发 SSH 部署（`.github/workflows/deploy.yml`）：服务器上 `git pull` + `docker compose up -d --build`。需在仓库 Secrets 配置 `SSH_HOST` / `SSH_USER` / `SSH_PRIVATE_KEY`。
+
 ### Vercel / Netlify
 
 开箱即用，直接推送 Git 仓库导入。部署前把 `NEXT_PUBLIC_SITE_URL` 改成正式域名。
@@ -214,13 +236,14 @@ personal-site/
 │  │  ├─ blog/                   # 博客列表 / 文章页 / 标签聚合页
 │  │  └─ projects/[slug]/        # 项目详情页
 │  ├─ admin/                     # 后台管理页
-│  ├─ api/                       # contact / views / admin 系列接口
+│  ├─ api/                       # contact / views / favicon / admin 系列接口
 │  ├─ layout.tsx                 # 根布局（字体、主题、toast）
 │  ├─ globals.css                # 设计系统 + 3D 特效样式
 │  ├─ sitemap.ts / robots.ts     # SEO
 ├─ components/
 │  ├─ sections/                  # 首页各区块
 │  ├─ admin/                     # 后台编辑器组件
+│  ├─ terminal.tsx               # 全局访客终端
 │  └─ ...                        # 粒子、3D、导航、页脚等特效组件
 ├─ content/
 │  ├─ data/                      # 占位个人数据 + 读取逻辑
@@ -244,7 +267,7 @@ personal-site/
 | 图标 | Lucide React + React Icons |
 | 评论 | giscus |
 | 邮件 | Nodemailer |
-| 部署 | Docker（standalone 输出）+ GitHub Actions CI/CD |
+| 部署 | Docker（standalone 输出）+ GitHub Actions SSH 自动部署 |
 
 ## 维护者
 
