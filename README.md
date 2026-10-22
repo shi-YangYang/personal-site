@@ -221,7 +221,7 @@ docker compose down
 - `site-content` → `/app/content`（博客文章）
 - `site-data` → `/app/data`（个人信息 JSON + 阅读量 + 邮件配置）
 
-推送到 `main` 会自动触发 SSH 部署（`.github/workflows/deploy.yml`）：服务器上 `git pull` + `docker compose up -d --build`。需在仓库 Secrets 配置 `SSH_HOST` / `SSH_USER` / `SSH_PRIVATE_KEY`。
+推送到 `main` 不会自动部署。需要部署时，在 GitHub 仓库的 **Actions → Deploy → Run workflow** 手动触发（`.github/workflows/deploy.yml`）：服务器上 `git pull` + `docker compose up -d --build`。需在仓库 Secrets 配置 `SSH_HOST` / `SSH_USER` / `SSH_PRIVATE_KEY`。
 
 ### Vercel / Netlify
 
