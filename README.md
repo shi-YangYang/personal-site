@@ -1,7 +1,10 @@
 # Personal Site
 
-[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](./LICENSE)
+[![Next.js](https://img.shields.io/badge/Next.js-16-000000.svg?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org)
+[![React](https://img.shields.io/badge/React-19-61DAFB.svg?style=flat-square&logo=react&logoColor=black)](https://react.dev)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4.svg?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6.svg?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Docker](https://img.shields.io/badge/Docker-2496ED.svg?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com)
 
 一个现代、快速、**中英双语**的个人作品集 + 博客模板，基于 **Next.js 16 + React 19 + Tailwind CSS 4**。暗色赛博绿风格：毛玻璃、3D 特效、访客终端、MDX 博客、后台管理、Docker 一键自部署。
 
