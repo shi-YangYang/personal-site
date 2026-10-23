@@ -9,7 +9,8 @@ import { LanguageSwitcher } from "./language-switcher";
 import { ThemeToggle } from "./theme-toggle";
 import { activeSectionStore } from "@/lib/active-section";
 import { terminalStore } from "@/lib/terminal-store";
-import { Menu, X, ChevronDown, TerminalSquare } from "lucide-react";
+import { agentStore } from "@/lib/agent-store";
+import { Bot, Menu, X, ChevronDown, TerminalSquare } from "lucide-react";
 
 const navItems = [
   { key: "nav.home", href: "" },
@@ -19,14 +20,14 @@ const navItems = [
 ] as const;
 
 const siteMap = [
-  { path: "~/portfolio", key: "nav.home", href: "" },
-  { path: "~/portfolio#about", key: "nav.about", href: "#about" },
-  { path: "~/portfolio#experience", key: "nav.experience", href: "#experience" },
-  { path: "~/portfolio#skills", key: "nav.skills", href: "#skills" },
-  { path: "~/portfolio#projects", key: "nav.projects", href: "#projects" },
-  { path: "~/portfolio#links", key: "nav.links", href: "#links" },
-  { path: "~/portfolio/blog", key: "nav.blog", href: "/blog" },
-  { path: "~/portfolio#contact", key: "nav.contact", href: "#contact" },
+  { path: "~/personal-site", key: "nav.home", href: "" },
+  { path: "~/personal-site#about", key: "nav.about", href: "#about" },
+  { path: "~/personal-site#experience", key: "nav.experience", href: "#experience" },
+  { path: "~/personal-site#skills", key: "nav.skills", href: "#skills" },
+  { path: "~/personal-site#projects", key: "nav.projects", href: "#projects" },
+  { path: "~/personal-site#links", key: "nav.links", href: "#links" },
+  { path: "~/personal-site/blog", key: "nav.blog", href: "/blog" },
+  { path: "~/personal-site#contact", key: "nav.contact", href: "#contact" },
 ] as const;
 
 export function Navbar() {
@@ -70,13 +71,13 @@ export function Navbar() {
   const basePath = `/${pathname.split("/")[1] ?? "zh"}`;
   const isHome = pathname === basePath;
   const restPath = pathname.split("/").slice(2).filter(Boolean).join("/");
-  let pwd = "~/portfolio";
+  let pwd = "~/personal-site";
   if (isHome) {
     if (activeSection && activeSection !== "home") {
-      pwd = `~/portfolio#${activeSection}`;
+      pwd = `~/personal-site#${activeSection}`;
     }
   } else if (restPath) {
-    pwd = `~/portfolio/${restPath}`;
+    pwd = `~/personal-site/${restPath}`;
   }
 
   return (
@@ -104,7 +105,7 @@ export function Navbar() {
               className="flex items-center gap-2 font-mono text-sm group"
             >
               <TerminalSquare size={16} className="text-brand-glow" />
-              <span className="text-text-primary group-hover:text-text-brand transition-colors">
+              <span className="hidden text-text-primary transition-colors group-hover:text-text-brand sm:inline">
                 {pwd}
               </span>
               <ChevronDown
@@ -176,6 +177,14 @@ export function Navbar() {
               aria-label="Toggle visitor terminal"
             >
               <TerminalSquare size={18} />
+            </button>
+            <button
+              type="button"
+              onClick={() => agentStore.open()}
+              className="p-2 text-text-secondary hover:text-text-brand transition-colors"
+              aria-label="Open site agent"
+            >
+              <Bot size={18} />
             </button>
             <ThemeToggle />
             <LanguageSwitcher />

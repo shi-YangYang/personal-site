@@ -68,7 +68,7 @@ export function Footer({ socials }: { socials: {
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-2 font-mono text-sm">
               <span className="text-brand-glow">▸</span>
-              <span className="text-text-primary">~/portfolio</span>
+              <span className="text-text-primary">~/personal-site</span>
             </div>
             <p className="text-sm text-text-secondary leading-relaxed max-w-sm">
               {t("footer.bio")}

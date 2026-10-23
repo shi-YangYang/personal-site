@@ -127,6 +127,20 @@ ADMIN_PASSWORD=your-strong-password
 
 首次打开会重播开机日志；`Esc` 关闭，`↑↓` 翻历史，`Tab` 补全，状态跨页面保持。
 
+### 站内 Agent
+
+右下角的 `AGENT` 按钮或 `⌘J` / `Ctrl+J` 打开站内 Agent。它从个人资料、项目、经历、技术栈和博客中检索，回答会附带站内引用；没有配置 LLM 时使用本地检索模式，不会编造站外信息。
+
+可选环境变量：
+
+```bash
+AGENT_LLM_BASE_URL=https://api.deepseek.com/v1
+AGENT_LLM_API_KEY=sk-...
+AGENT_MODEL=deepseek-chat
+```
+
+不配置时 `AGENT / LOCAL` 模式仍然可用。
+
 ### 后台管理
 
 访问 `/admin` 登录后台，三个标签页：

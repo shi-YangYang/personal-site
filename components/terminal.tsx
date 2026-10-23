@@ -468,12 +468,12 @@ export function Terminal({
 
       case "pwd": {
         const active = activeSectionStore.get();
-        let pwd = "~/portfolio";
+        let pwd = "~/personal-site";
         if (isHomePath(pathname, basePath)) {
-          if (active && active !== "home") pwd = `~/portfolio#${active}`;
+          if (active && active !== "home") pwd = `~/personal-site#${active}`;
         } else {
           const rest = pathname.split("/").slice(2).filter(Boolean).join("/");
-          pwd = `~/portfolio/${rest}`;
+          pwd = `~/personal-site/${rest}`;
         }
         print([{ kind: "out", text: pwd }]);
         break;
