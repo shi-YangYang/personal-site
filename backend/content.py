@@ -17,6 +17,7 @@ from .config import (
     LOCALES,
     MAIL_FILE,
     PERSONAL_FILE,
+    PUBLIC_DIR,
     VIEWS_FILE,
 )
 
@@ -393,4 +394,7 @@ def favicon_candidate() -> tuple[Path, str] | None:
         path = DATA_DIR / name
         if path.is_file():
             return path, media_type
+    fallback = PUBLIC_DIR / "favicon.svg"
+    if fallback.is_file():
+        return fallback, "image/svg+xml"
     return None

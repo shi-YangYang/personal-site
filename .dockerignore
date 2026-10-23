@@ -40,3 +40,12 @@ docker-compose.yml
 .dockerignore
 README.md
 LICENSE
+
+# Python backend caches / local venv
+backend/.venv
+backend/**/__pycache__
+**/*.pyc
+
+# Local design docs
+specs
+prototype

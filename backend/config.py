@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parent.parent
 CONTENT_DIR = ROOT / "content"
 BLOG_DIR = CONTENT_DIR / "blog"
 DATA_DIR = ROOT / "data"
+PUBLIC_DIR = ROOT / "public"
 PERSONAL_FILE = DATA_DIR / "personal.local.json"
 MAIL_FILE = DATA_DIR / "mail.json"
 VIEWS_FILE = DATA_DIR / "views.json"

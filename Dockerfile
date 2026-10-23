@@ -1,21 +1,21 @@
 # syntax=docker/dockerfile:1
 
-# ---------- 依赖安装 ----------
-FROM node:22-alpine AS deps
-RUN corepack enable
+# ---------- Node dependencies ----------
+FROM node:22-bookworm-slim AS deps
+RUN npm config set registry https://registry.npmmirror.com/ \
+  && npm install -g pnpm@12.10.1
 WORKDIR /app
-RUN npm config set registry https://registry.npmmirror.com/
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 
-# ---------- 构建 ----------
-FROM node:22-alpine AS builder
-RUN corepack enable
+# ---------- Next.js build ----------
+FROM node:22-bookworm-slim AS builder
+RUN npm config set registry https://registry.npmmirror.com/ \
+  && npm install -g pnpm@12.10.1
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# NEXT_PUBLIC_* 变量在构建时内联，需通过 --build-arg 传入
 ARG NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ARG NEXT_PUBLIC_GISCUS_REPO=
 ARG NEXT_PUBLIC_GISCUS_REPO_ID=
@@ -27,37 +27,51 @@ ENV NEXT_PUBLIC_GISCUS_REPO_ID=$NEXT_PUBLIC_GISCUS_REPO_ID
 ENV NEXT_PUBLIC_GISCUS_CATEGORY=$NEXT_PUBLIC_GISCUS_CATEGORY
 ENV NEXT_PUBLIC_GISCUS_CATEGORY_ID=$NEXT_PUBLIC_GISCUS_CATEGORY_ID
 ENV NEXT_TELEMETRY_DISABLED=1
-# 限制构建并发与内存，避免小内存服务器 OOM
 ENV NEXT_BUILD_WORKERS=2
 ENV NODE_OPTIONS=--max-old-space-size=1024
+ENV API_INTERNAL_URL=http://127.0.0.1:8000
 
-RUN pnpm build
+RUN pnpm exec next build --webpack
 
-# ---------- 运行 ----------
-FROM node:22-alpine AS runner
+# ---------- Python dependencies ----------
+FROM python:3.12-slim AS pydeps
 WORKDIR /app
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV PORT=3000
-ENV HOSTNAME=0.0.0.0
+COPY backend/requirements.txt ./backend/requirements.txt
+RUN python -m venv /opt/venv \
+  && /opt/venv/bin/pip install --no-cache-dir -r backend/requirements.txt
 
-RUN addgroup --system --gid 1001 nodejs \
-  && adduser --system --uid 1001 nextjs
+# ---------- Runtime ----------
+FROM python:3.12-slim AS runner
+ENV NODE_ENV=production \
+    NEXT_TELEMETRY_DISABLED=1 \
+    PORT=3000 \
+    HOSTNAME=0.0.0.0 \
+    API_INTERNAL_URL=http://127.0.0.1:8000 \
+    PATH="/opt/venv/bin:$PATH"
 
-# standalone 服务端
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-# 静态资源（standalone 不包含，需手动拷贝）
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends ca-certificates \
+  && rm -rf /var/lib/apt/lists/* \
+  && groupadd --system --gid 1001 app \
+  && useradd --system --uid 1001 --gid app --create-home app
 
-# content 由 volume 挂载，这里保留一个可写的初始副本（含个人占位数据与博客文章）
-COPY --from=builder --chown=nextjs:nodejs /app/content ./content
-# data 由 volume 挂载（运行时写入 personal.local.json / views.json），无需打进镜像，
-# 但必须显式创建并赋权给 nextjs，否则命名卷首次挂载时目录属主是 root，会导致写入失败
-RUN mkdir -p /app/data && chown -R nextjs:nodejs /app/data
+# Copy the Node 22 binary from the official image; both images are Debian 12.
+COPY --from=node:22-bookworm-slim /usr/local/bin/node /usr/local/bin/node
+COPY --from=pydeps /opt/venv /opt/venv
 
-USER nextjs
+WORKDIR /app
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/content ./content
+COPY backend ./backend
+COPY start.sh ./start.sh
 
+RUN mkdir -p /app/data \
+  && chmod +x /app/start.sh \
+  && chown -R app:app /app
+
+USER app
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+CMD ["/app/start.sh"]
