@@ -193,18 +193,23 @@ export function AgentConsole() {
                     <p className="whitespace-pre-wrap text-text-secondary">{message.text}</p>
                     {message.citations && message.citations.length > 0 && (
                       <ul className="mt-2.5 flex flex-wrap gap-x-3 gap-y-1">
-                        {message.citations.map((citation) => (
+                        {message.citations.map((citation) => {
+                          const href = citation.href.startsWith("#")
+                            ? `/${locale}${citation.href}`
+                            : citation.href;
+                          return (
                           <li key={`${citation.label}-${citation.href}`}>
                             <a
-                              href={citation.href}
-                              target={citation.href.startsWith("http") ? "_blank" : undefined}
-                              rel={citation.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                              href={href}
+                              target={href.startsWith("http") ? "_blank" : undefined}
+                              rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
                               className="text-[10px] text-text-brand underline decoration-brand-primary/30 underline-offset-2 hover:decoration-brand-glow"
                             >
                               {citation.label} ↗
                             </a>
                           </li>
-                        ))}
+                          );
+                        })}
                       </ul>
                     )}
                   </div>
