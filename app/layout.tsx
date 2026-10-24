@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { apiUrl } from "@/lib/api";
 import { Geist, Geist_Mono, Noto_Sans_SC } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ToastProvider } from "@/components/toast";
@@ -27,7 +28,7 @@ export const metadata: Metadata = {
   title: "Personal Site",
   description: "独立开发者的个人作品集与博客",
   icons: {
-    icon: "/api/favicon",
+    icon: apiUrl("/api/favicon"),
   },
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",

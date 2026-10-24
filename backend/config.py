@@ -21,7 +21,6 @@ ADMIN_COOKIE = "admin_session"
 ADMIN_TTL_SECONDS = 7 * 24 * 60 * 60
 
 COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "false").lower() == "true"
-API_INTERNAL_URL = os.environ.get("API_INTERNAL_URL", "http://127.0.0.1:8000")
 
 AGENT_LLM_BASE_URL = os.environ.get("AGENT_LLM_BASE_URL", "").rstrip("/")
 AGENT_LLM_API_KEY = os.environ.get("AGENT_LLM_API_KEY", "")

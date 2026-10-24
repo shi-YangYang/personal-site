@@ -14,10 +14,11 @@ services:
     ports:
       - "3000:3000"
     environment:
-      API_INTERNAL_URL: http://127.0.0.1:8000
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
       ADMIN_SESSION_SALT: ${ADMIN_SESSION_SALT:-personal-site}
       COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      # Only needed for local `pnpm dev` with a cross-origin API.
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
       # Optional OpenAI-compatible LLM for the site agent.
       AGENT_LLM_BASE_URL: ${AGENT_LLM_BASE_URL:-}
       AGENT_LLM_API_KEY: ${AGENT_LLM_API_KEY:-}

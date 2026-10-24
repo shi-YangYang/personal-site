@@ -27,8 +27,8 @@
 ### 后端与部署
 
 - FastAPI 接管 `/api/*`：agent、contact、views、favicon、admin login/logout/posts/personal/mail。
-- Next.js 通过 `beforeFiles` rewrite 把 `/api/:path*` 转发到 `http://127.0.0.1:8000/api/:path*`。
-- 单 Docker 容器：Next.js standalone + uvicorn，一个入口端口 3000。
+- Next.js 只做前端，不再保留任何 `app/api` Route Handler；浏览器通过 `NEXT_PUBLIC_API_BASE_URL` 直连 FastAPI，生产由 Caddy 同源反代 `/api/*` 到 FastAPI。
+- 单 Docker 容器：Caddy + Next.js standalone + uvicorn，一个入口端口 3000。
 - 保留 `content/`、`data/` 持久化卷；后台写入和前台读取一致。
 
 ## 非目标

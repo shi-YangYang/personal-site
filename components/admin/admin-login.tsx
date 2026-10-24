@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { SectionLabel } from "@/components/section-label";
+import { apiUrl } from "@/lib/api";
 
 export function AdminLogin() {
   const [password, setPassword] = useState("");
@@ -15,8 +16,9 @@ export function AdminLogin() {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/login", {
+      const res = await fetch(apiUrl("/api/admin/login"), {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
       });

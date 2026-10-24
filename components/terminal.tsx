@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import type { Locale } from "@/lib/i18n";
 import type { PersonalData } from "@/content/data";
 import { cn } from "@/lib/utils";
+import { apiUrl } from "@/lib/api";
 import { terminalStore } from "@/lib/terminal-store";
 import { activeSectionStore } from "@/lib/active-section";
 import { useI18n } from "./i18n-provider";
@@ -279,7 +280,7 @@ export function Terminal({
     try {
       const results = await Promise.all(
         targets.map(async (p) => {
-          const res = await fetch(`/api/views/${encodeURIComponent(p.slug)}`);
+          const res = await fetch(apiUrl(`/api/views/${encodeURIComponent(p.slug)}`));
           const data = await res.json();
           return {
             slug: p.slug,

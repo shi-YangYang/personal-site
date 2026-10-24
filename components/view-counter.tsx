@@ -1,5 +1,6 @@
 "use client";
 
+import { apiUrl } from "@/lib/api";
 import { useEffect, useState } from "react";
 import { Eye } from "lucide-react";
 
@@ -26,7 +27,7 @@ export function ViewCounter({
       // ignore storage errors
     }
     if (shouldCount) {
-      fetch(`/api/views/${slug}`, { method: "POST" })
+      fetch(apiUrl(`/api/views/${slug}`), { method: "POST" })
         .then((res) => res.json())
         .then((data) => {
           if (!cancelled && typeof data.views === "number") {

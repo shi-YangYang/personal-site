@@ -5,7 +5,7 @@
 ### Phase 1：Python 后端 + Next 代理
 
 1. `backend/`：FastAPI 应用、配置、鉴权、内容读写、邮件、Agent 检索。
-2. `next.config.ts`：`beforeFiles` rewrite `/api/:path*` → FastAPI。
+2. 删除 `app/api/**` 与 Node 邮件/发帖 helper；前端统一通过 `lib/api.ts` 读取 `NEXT_PUBLIC_API_BASE_URL` 直连 FastAPI。
 3. 本地 venv 启动 uvicorn，逐项替换验证 existing API 客户端。
 4. 验收：agent/contact/views/favicon/admin 接口 + 后台页面。
 5. 本地 commit。
@@ -21,8 +21,8 @@
 
 ### Phase 3：Docker 单容器
 
-1. Dockerfile 改为 Python 3.12 + Node 22 运行时；构建 Next standalone + venv。
-2. `start.sh` 启动 uvicorn(127.0.0.1:8000) + `node server.js`。
+1. Dockerfile 改为 Python 3.12 + Node 22 + Caddy 运行时；构建 Next standalone + venv。
+2. `start.sh` 启动 uvicorn(127.0.0.1:8000) + Next(127.0.0.1:3001) + Caddy(3000)。
 3. docker-compose 单 service，保留 content/data volume。
 4. 验收：build、run、/zh、/api/agent/ask、后台登录。
 5. 本地 commit。
@@ -40,6 +40,6 @@
 ## 风险
 
 - 单容器双进程：uvicorn 崩溃不会自动杀掉 node；启动脚本做基本守护，Docker restart 兜底。
-- Next rewrite 会覆盖所有 `/api/*`，迁移期间需确认 admin 页面 cookie 兼容。
+- Caddy 同源反代保持 admin cookie 兼容；本地 dev 用 CORS + `credentials: include` 直连 FastAPI。
 - 现有页面 `force-dynamic`，Python 写文件后无需 revalidate；后续若改静态需补 revalidate。
 - 无 LLM Key 时回答为抽取式，质量取决于站内资料完整度。

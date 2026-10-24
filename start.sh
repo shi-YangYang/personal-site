@@ -5,28 +5,34 @@ export PATH="/opt/venv/bin:$PATH"
 
 uvicorn backend.main:app --host 127.0.0.1 --port 8000 --log-level info &
 API_PID=$!
-WEB_PID=""
+
+node server.js &
+WEB_PID=$!
 
 cleanup() {
-  kill "$API_PID" 2>/dev/null || true
-  if [ -n "$WEB_PID" ]; then kill "$WEB_PID" 2>/dev/null || true; fi
+  kill "$API_PID" "$WEB_PID" "${CADDY_PID:-}" 2>/dev/null || true
 }
 trap cleanup EXIT TERM INT
 
-# Wait until FastAPI answers before starting Next.
 python - <<'PY'
 import time
 import urllib.request
 
-for _ in range(60):
-    try:
-        urllib.request.urlopen("http://127.0.0.1:8000/api/health", timeout=1).read()
-        raise SystemExit(0)
-    except Exception:
-        time.sleep(0.5)
-raise SystemExit("FastAPI did not become ready")
+checks = (
+    "http://127.0.0.1:8000/api/health",
+    "http://127.0.0.1:3001/zh",
+)
+for url in checks:
+    for _ in range(120):
+        try:
+            urllib.request.urlopen(url, timeout=1).read()
+            break
+        except Exception:
+            time.sleep(0.5)
+    else:
+        raise SystemExit(f"service did not become ready: {url}")
 PY
 
-node server.js &
-WEB_PID=$!
-wait "$WEB_PID"
+caddy run --config /app/Caddyfile --adapter caddyfile &
+CADDY_PID=$!
+wait "$CADDY_PID"

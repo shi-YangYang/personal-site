@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Bot, Send, X } from "lucide-react";
 import { useI18n } from "./i18n-provider";
 import { agentStore, type AgentState } from "@/lib/agent-store";
+import { apiUrl } from "@/lib/api";
 
 type Citation = { label: string; href: string; kind?: string };
 
@@ -87,7 +88,7 @@ export function AgentConsole() {
       setMessages((prev) => [...prev, { role: "user", text: question }]);
       setLoading(true);
       try {
-        const response = await fetch("/api/agent/ask", {
+        const response = await fetch(apiUrl("/api/agent/ask"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ question, locale }),

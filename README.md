@@ -89,12 +89,15 @@ python3 -m venv backend/.venv
 backend/.venv/bin/pip install -r backend/requirements.txt
 backend/.venv/bin/uvicorn backend.main:app --reload --port 8000
 
-# 4. 启动 Next.js
+# 4. 让前端直连 FastAPI（写入 .env.local）
+echo 'NEXT_PUBLIC_API_BASE_URL=http://localhost:8000' >> .env.local
+
+# 5. 启动 Next.js
 pnpm dev
 ```
 
-打开 http://localhost:3000/zh（或 `/en`）查看站点。  
-Next.js 通过 `beforeFiles` rewrite 把 `/api/*` 转发到 FastAPI，开发时也可以先用 `docker compose up --build` 一次启动完整环境。
+打开 http://localhost:3000/zh（或 `/en`）查看站点。浏览器直接请求 FastAPI 的 8000 端口，Next.js 不再提供任何 API 路由；FastAPI 已开启 CORS 并允许携带后台 cookie。  
+开发时也可以直接用 `docker compose up --build` 启动完整单容器环境。
 
 ## 使用
 
@@ -245,7 +248,7 @@ docker compose logs -f
 docker compose down
 ```
 
-站点运行在 `http://your-server:3000`。镜像内同时运行 Next.js 与 FastAPI，只暴露一个端口。`docker-compose.yml` 用两个命名 volume 持久化数据，容器重启、重建都不丢：
+站点运行在 `http://your-server:3000`。镜像内运行 Caddy + Next.js + FastAPI：Caddy 监听 3000，`/api/*` 直接反代到 FastAPI，其余请求反代到 Next.js。浏览器只看到一个同源端口，Next.js 不再处理任何 API。`docker-compose.yml` 用两个命名 volume 持久化数据，容器重启、重建都不丢：
 
 - `site-content` → `/app/content`（博客文章）
 - `site-data` → `/app/data`（个人信息 JSON + 阅读量 + 邮件配置）
@@ -254,7 +257,7 @@ docker compose down
 
 ### Vercel / Netlify
 
-不再开箱即用：站内 API 已迁移到 FastAPI。平台部署需要把 Next.js 与 Python 后端拆成两个服务，并配置 `API_INTERNAL_URL`。个人站推荐直接使用上面的 Docker 单容器方案。
+不再开箱即用：Next.js 只负责前端，API 全部在 FastAPI。平台部署需要把 Next.js 与 Python 后端拆成两个服务，并把 `NEXT_PUBLIC_API_BASE_URL` 指向 FastAPI 的公网地址。个人站推荐直接使用上面的 Docker 单容器方案。
 
 > ⚠️ 平台类部署文件系统只读，后台「在线发博 / 编辑个人信息」依赖写入 `content/` 与 `data/`，需使用 Docker 自托管。
 
@@ -267,8 +270,7 @@ personal-site/
 │  │  ├─ page.tsx                # 首页（Hero / 关于 / 经历 / 技能 / 项目 / 联系）
 │  │  ├─ blog/                   # 博客列表 / 文章页 / 标签聚合页
 │  │  └─ projects/[slug]/        # 项目详情页
-│  ├─ admin/                     # 后台管理页
-│  ├─ api/                       # contact / views / favicon / admin 系列接口
+│  ├─ admin/                     # 后台管理页（SSR 只做 cookie 门禁）
 │  ├─ layout.tsx                 # 根布局（字体、主题、toast）
 │  ├─ globals.css                # 设计系统 + 3D 特效样式
 │  ├─ sitemap.ts / robots.ts     # SEO
@@ -285,8 +287,9 @@ personal-site/
 ├─ backend/                      # FastAPI：Agent、联系表单、阅读量、后台 API
 ├─ public/                       # 静态资源
 ├─ specs/                        # 功能规格与计划
-├─ Dockerfile                    # Next.js + FastAPI 单容器
-├─ start.sh                      # 容器内启动 uvicorn + Next
+├─ Caddyfile                     # 同源入口：/api → FastAPI，其余 → Next
+├─ Dockerfile                    # Caddy + Next.js + FastAPI 单容器
+├─ start.sh                      # 容器内启动 Caddy + uvicorn + Next
 ├─ docker-compose.yml            # 一键部署
 └─ LICENSE
 ```

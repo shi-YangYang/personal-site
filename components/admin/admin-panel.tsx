@@ -9,6 +9,7 @@ import { PostEditor } from "./post-editor";
 import { PersonalEditor } from "./personal-editor";
 import { MailEditor } from "./mail-editor";
 import { cn } from "@/lib/utils";
+import { apiUrl } from "@/lib/api";
 
 type Tab = "posts" | "personal" | "mail";
 
@@ -18,7 +19,10 @@ export function AdminPanel() {
 
   async function handleLogout() {
     try {
-      await fetch("/api/admin/logout", { method: "POST" });
+      await fetch(apiUrl("/api/admin/logout"), {
+        method: "POST",
+        credentials: "include",
+      });
     } finally {
       router.refresh();
     }
