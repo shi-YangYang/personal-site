@@ -177,10 +177,10 @@ export function Terminal({
         return;
       }
       if ((e.key === "`" || e.key === "~") && !e.metaKey && !e.ctrlKey && !e.altKey) {
-        const el = e.target as HTMLElement | null;
+        const el = e.target instanceof Element ? e.target : null;
         if (el?.closest("[data-terminal]")) return;
         if (
-          el &&
+          el instanceof HTMLElement &&
           (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable)
         ) {
           return;

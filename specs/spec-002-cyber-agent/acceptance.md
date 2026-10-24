@@ -44,3 +44,25 @@ PASS（单 Agent 分阶段自检，非独立验收 Agent）
 - 本地开发：`NEXT_PUBLIC_API_BASE_URL=http://localhost:8001` 直连 FastAPI；CORS 预检通过，Agent 与后台登录（`credentials: include`）正常。
 - Docker：Caddy 在 3000 同源反代，`/api/health`、`/api/agent/ask`、`/api/favicon`、admin 登录与 `/admin` 均通过。
 - Docker 构建已去除 runtime `apt-get`，Python 依赖使用镜像源；Caddy/Node 二进制从官方镜像复制。
+
+## Regression Matrix (Docker + Caddy)
+
+| Area | Result |
+|---|---|
+| `/zh` / `/en` / `/zh/blog` / `/zh/blog/tags/nextjs` | PASS |
+| Agent 中文提问 + 引用 | PASS |
+| 联系表单提交 + 成功提示 | PASS |
+| 博客阅读量写入（`views.json` → 1） | PASS |
+| 后台登录 / 退出 | PASS |
+| 后台个人信息保存 | PASS |
+| 后台邮件配置保存 | PASS |
+| 后台发布文章（写入 MDX） | PASS |
+| 项目详情页 | PASS |
+| 终端打开 / `help` 命令 / Esc 关闭 | PASS |
+| 主题切换 dark → light → dark | PASS |
+| 中英文切换 | PASS |
+| 移动端无横向滚动 / Agent 打开 | PASS |
+
+回归中发现并修复：终端全局快捷键在 `event.target` 不是 Element 时会调用 `closest()` 崩溃。已改为 `instanceof Element` 守卫。
+
+未执行/无法执行：真实 SMTP 发信、LLM 模式（未提供 Key）、HTTPS/TLS、命名卷跨容器重启持久化。
