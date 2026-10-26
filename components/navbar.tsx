@@ -105,7 +105,7 @@ export function Navbar() {
               className="flex items-center gap-2 font-mono text-sm group"
             >
               <TerminalSquare size={16} className="text-brand-glow" />
-              <span className="hidden text-text-primary transition-colors group-hover:text-text-brand sm:inline">
+              <span className="hidden w-[200px] truncate text-left text-text-primary transition-colors group-hover:text-text-brand sm:inline-block md:w-[220px]">
                 {pwd}
               </span>
               <ChevronDown

@@ -134,7 +134,7 @@ export function AgentConsole() {
         onClick={() => agentStore.toggle()}
         aria-expanded={state.open}
         aria-label={state.open ? t.close : t.button}
-        className="fixed bottom-5 right-5 z-[70] hidden items-center gap-2 rounded-full md:inline-flex border border-brand-primary/30 bg-bg-elevated/90 px-4 py-2.5 font-mono text-[10px] tracking-[0.12em] text-text-brand shadow-[0_0_30px_rgba(16,185,129,0.18)] backdrop-blur-xl transition-all hover:border-brand-primary/60 hover:glow sm:bottom-6 sm:right-6"
+        className="fixed bottom-5 left-5 z-[70] hidden items-center gap-2 rounded-full md:inline-flex border border-brand-primary/30 bg-bg-elevated/90 px-4 py-2.5 font-mono text-[10px] tracking-[0.12em] text-text-brand shadow-[0_0_30px_rgba(16,185,129,0.18)] backdrop-blur-xl transition-all hover:border-brand-primary/60 hover:glow sm:bottom-6 sm:left-6"
       >
         <span className="relative flex size-2">
           <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand-glow opacity-60" />
@@ -150,7 +150,7 @@ export function AgentConsole() {
           role="dialog"
           aria-modal="true"
           aria-label={t.title}
-          className="fixed inset-x-3 bottom-20 z-[95] flex h-[min(72vh,620px)] flex-col overflow-hidden rounded-2xl border border-brand-primary/25 bg-bg-elevated/95 shadow-[0_24px_80px_rgba(0,0,0,0.65)] backdrop-blur-2xl sm:inset-x-auto sm:right-6 sm:bottom-24 sm:w-[min(94vw,460px)]"
+          className="fixed inset-x-3 bottom-20 z-[95] flex h-[min(72vh,620px)] flex-col overflow-hidden rounded-2xl border border-brand-primary/25 bg-bg-elevated/95 shadow-[0_24px_80px_rgba(0,0,0,0.65)] backdrop-blur-2xl sm:inset-x-auto sm:left-6 sm:bottom-24 sm:w-[min(94vw,460px)]"
         >
           <header className="flex items-center justify-between gap-3 border-b border-brand-primary/15 px-4 py-3">
             <div className="flex items-center gap-2.5">
