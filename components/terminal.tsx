@@ -8,7 +8,6 @@ import type { PersonalData } from "@/content/data";
 import { cn } from "@/lib/utils";
 import { apiUrl } from "@/lib/api";
 import { terminalStore } from "@/lib/terminal-store";
-import { activeSectionStore } from "@/lib/active-section";
 import { useI18n } from "./i18n-provider";
 import { useTheme } from "./theme-provider";
 import { bootLines } from "./boot-loader";
@@ -253,15 +252,7 @@ export function Terminal({
     }
     if (sections.includes(target)) {
       print([{ kind: "ok", text: c.opening(target) }]);
-      const active = activeSectionStore.get();
-      const onHome = isHomePath(pathname, basePath) && (!active || active === "home" || active === target);
-      if (onHome) {
-        document
-          .getElementById(target === "home" ? "home" : target)
-          ?.scrollIntoView({ behavior: "smooth", block: "start" });
-      } else {
-        router.push(`${basePath}#${target}`);
-      }
+      router.push(target === "home" ? basePath : `${basePath}/${target}`);
       return;
     }
     print([{ kind: "warn", text: c.openUnknown(target) }]);
@@ -468,15 +459,8 @@ export function Terminal({
         break;
 
       case "pwd": {
-        const active = activeSectionStore.get();
-        let pwd = "~/personal-site";
-        if (isHomePath(pathname, basePath)) {
-          if (active && active !== "home") pwd = `~/personal-site#${active}`;
-        } else {
-          const rest = pathname.split("/").slice(2).filter(Boolean).join("/");
-          pwd = `~/personal-site/${rest}`;
-        }
-        print([{ kind: "out", text: pwd }]);
+        const rest = pathname.split("/").slice(2).filter(Boolean).join("/");
+        print([{ kind: "out", text: rest ? `~/${rest}` : "~" }]);
         break;
       }
 
@@ -506,9 +490,7 @@ export function Terminal({
             { kind: "ok", text: c.sudoHire },
             { kind: "dim", text: `email: ${personal.email}` },
           ]);
-          document
-            .getElementById("contact")
-            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+          router.push(`${basePath}/contact`);
           break;
         }
         print([{ kind: "warn", text: c.sudoDenied }]);
@@ -700,6 +682,3 @@ export function Terminal({
   );
 }
 
-function isHomePath(pathname: string, basePath: string) {
-  return pathname === basePath || pathname === `${basePath}/`;
-}

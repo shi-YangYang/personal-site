@@ -113,7 +113,8 @@ export function HeroConsole({
           <FadeIn delay={0.3}>
             <div className="mt-7 flex flex-wrap items-center gap-3">
               <Link
-                href="#projects"
+                href={`/${locale}/projects`}
+                scroll={false}
                 className="group inline-flex items-center gap-2 rounded-full bg-brand-primary px-5 py-2.5 text-sm font-medium text-bg-base transition-all hover:glow"
               >
                 {messages.hero.cta_primary}

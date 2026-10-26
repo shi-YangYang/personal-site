@@ -42,7 +42,7 @@ def _documents(locale: str) -> list[Document]:
         for key in ("name", "role", "tagline", "bio", "location")
     ).strip()
     if about_text:
-        docs.append(Document("关于" if zh else "About", "#about", "about", about_text))
+        docs.append(Document("关于" if zh else "About", f"/{locale}/about", "about", about_text))
 
     for project in data.get("projects") or []:
         if not isinstance(project, dict):
@@ -82,7 +82,7 @@ def _documents(locale: str) -> list[Document]:
             docs.append(
                 Document(
                     f"{item.get('company', '')} · {item.get('role', '')}".strip(" ·"),
-                    "#experience",
+                    f"/{locale}/experience",
                     "experience",
                     text,
                 )
@@ -94,7 +94,7 @@ def _documents(locale: str) -> list[Document]:
         if isinstance(group, dict)
     ).strip()
     if skill_text:
-        docs.append(Document("技术栈" if zh else "Skills", "#skills", "skills", skill_text))
+        docs.append(Document("技术栈" if zh else "Skills", f"/{locale}/skills", "skills", skill_text))
 
     for post in list_posts(locale):
         text = " ".join(
@@ -110,7 +110,7 @@ def _documents(locale: str) -> list[Document]:
 
     email = str(data.get("email", "")).strip()
     if email:
-        docs.append(Document("联系" if zh else "Contact", "#contact", "contact", f"邮箱 email {email}"))
+        docs.append(Document("联系" if zh else "Contact", f"/{locale}/contact", "contact", f"邮箱 email {email}"))
     return docs
 
 

@@ -196,7 +196,7 @@ export function AgentConsole() {
                       <ul className="mt-2.5 flex flex-wrap gap-x-3 gap-y-1">
                         {message.citations.map((citation) => {
                           const href = citation.href.startsWith("#")
-                            ? `/${locale}${citation.href}`
+                            ? `/${locale}/${citation.href.slice(1)}`
                             : citation.href;
                           return (
                           <li key={`${citation.label}-${citation.href}`}>

@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { locales } from "@/lib/i18n";
 import { getAllPosts } from "@/lib/blog";
 import { getPersonalData } from "@/content/data";
+import { SECTION_IDS } from "@/lib/sections";
 
 const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
@@ -20,6 +21,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.8,
     });
+
+    for (const section of SECTION_IDS) {
+      entries.push({
+        url: `${base}/${section}`,
+        changeFrequency: "monthly",
+        priority: 0.7,
+      });
+    }
 
     for (const post of getAllPosts(locale)) {
       entries.push({

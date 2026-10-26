@@ -1,11 +1,18 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { activeSectionStore } from "@/lib/active-section";
 
 type Item = { id: string; label: string };
 
-export function SectionIndicator({ items }: { items: Item[] }) {
+export function SectionIndicator({
+  items,
+  locale,
+}: {
+  items: Item[];
+  locale: string;
+}) {
   const [active, setActive] = useState(items[0]?.id);
 
   useEffect(() => {
@@ -34,9 +41,10 @@ export function SectionIndicator({ items }: { items: Item[] }) {
       className="fixed right-6 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col gap-3"
     >
       {items.map((item) => (
-        <a
+        <Link
           key={item.id}
-          href={`#${item.id}`}
+          href={item.id === "home" ? `/${locale}` : `/${locale}/${item.id}`}
+          scroll={false}
           className="group relative flex items-center justify-end"
           aria-label={`Go to ${item.label}`}
         >
@@ -50,7 +58,7 @@ export function SectionIndicator({ items }: { items: Item[] }) {
                 : "size-1.5 rounded-full bg-text-muted group-hover:bg-text-brand transition-all"
             }
           />
-        </a>
+        </Link>
       ))}
     </nav>
   );
