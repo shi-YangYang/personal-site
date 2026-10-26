@@ -105,16 +105,18 @@ export function Navbar() {
               className="flex items-center font-mono text-sm group"
             >
               <TerminalSquare size={16} className="mr-2 shrink-0 text-brand-glow" />
-              <span className="hidden w-[200px] truncate text-right text-text-primary transition-colors group-hover:text-text-brand sm:inline-block md:w-[220px]">
-                {pwd}
+              <span className="flex min-w-0 items-center sm:w-[200px] md:w-[220px]">
+                <span className="hidden min-w-0 truncate text-left text-text-primary transition-colors group-hover:text-text-brand sm:inline">
+                  {pwd}
+                </span>
+                <ChevronDown
+                  size={14}
+                  className={cn(
+                    "shrink-0 text-text-muted transition-transform duration-200",
+                    dirOpen && "rotate-180",
+                  )}
+                />
               </span>
-              <ChevronDown
-                size={14}
-                className={cn(
-                  "shrink-0 text-text-muted transition-transform duration-200",
-                  dirOpen && "rotate-180",
-                )}
-              />
             </button>
 
             {dirOpen && (
