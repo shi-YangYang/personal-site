@@ -84,19 +84,29 @@ cd personal-site
 # 2. 安装依赖
 pnpm install
 
-# 3. 安装并启动 FastAPI（另开终端）
+# 3. 安装 Python 依赖（只需一次）
 python3 -m venv backend/.venv
 backend/.venv/bin/pip install -r backend/requirements.txt
-backend/.venv/bin/uvicorn backend.main:app --reload --port 8000
 
-# 4. 让前端直连 FastAPI（写入 .env.local）
-echo 'NEXT_PUBLIC_API_BASE_URL=http://localhost:8000' >> .env.local
-
-# 5. 启动 Next.js
+# 4. 一个命令同时启动 FastAPI + Next.js
 pnpm dev
 ```
 
-打开 http://localhost:3000/zh（或 `/en`）查看站点。浏览器直接请求 FastAPI 的 8000 端口，Next.js 不再提供任何 API 路由；FastAPI 已开启 CORS 并允许携带后台 cookie。  
+打开 http://localhost:3000/zh（或 `/en`）查看站点。`pnpm dev` 会自动选择 8000–8019 中可用的 API 端口，并把 `NEXT_PUBLIC_API_BASE_URL` 注入 Next.js；Ctrl+C 会同时结束两个进程。
+
+需要单独启动时：
+
+```bash
+pnpm dev:web   # 只启动 Next.js
+pnpm dev:api   # 只启动 FastAPI（默认 8000）
+```
+
+如果 8000 被占用，`pnpm dev` 会自动切到 8001；也可以手动指定：
+
+```bash
+API_PORT=8001 WEB_PORT=3001 pnpm dev
+```
+
 开发时也可以直接用 `docker compose up --build` 启动完整单容器环境。
 
 ## 使用
