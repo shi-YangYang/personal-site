@@ -102,16 +102,16 @@ export function Navbar() {
               onClick={() => setDirOpen((v) => !v)}
               aria-haspopup="menu"
               aria-expanded={dirOpen}
-              className="flex items-center gap-2 font-mono text-sm group"
+              className="flex items-center font-mono text-sm group"
             >
-              <TerminalSquare size={16} className="text-brand-glow" />
-              <span className="hidden w-[200px] truncate text-left text-text-primary transition-colors group-hover:text-text-brand sm:inline-block md:w-[220px]">
+              <TerminalSquare size={16} className="mr-2 shrink-0 text-brand-glow" />
+              <span className="hidden w-[200px] truncate text-right text-text-primary transition-colors group-hover:text-text-brand sm:inline-block md:w-[220px]">
                 {pwd}
               </span>
               <ChevronDown
                 size={14}
                 className={cn(
-                  "text-text-muted transition-transform duration-200",
+                  "shrink-0 text-text-muted transition-transform duration-200",
                   dirOpen && "rotate-180",
                 )}
               />
