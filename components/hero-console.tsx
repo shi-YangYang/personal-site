@@ -77,7 +77,7 @@ export function HeroConsole({
   return (
     <section
       id="home"
-      className="snap-section relative flex min-h-[100svh] items-center overflow-hidden pt-16"
+      className="snap-section relative flex min-h-[100svh] items-center overflow-hidden"
     >
       <div className="absolute inset-0 bg-grid opacity-25" />
       <div className="absolute inset-0 bg-glow-radial" />
@@ -96,10 +96,7 @@ export function HeroConsole({
           </FadeIn>
 
           <FadeIn delay={0.1}>
-            <h1
-              className="glitch mt-7 text-[clamp(3rem,8vw,6.5rem)] font-bold leading-[0.9] tracking-[-0.055em] text-depth"
-              data-text={data.name}
-            >
+            <h1 className="mt-7 text-[clamp(3rem,8vw,6.5rem)] font-bold leading-[0.9] tracking-[-0.055em] text-depth">
               {data.name}
             </h1>
             <p className="mt-3 text-[clamp(1.35rem,3vw,2.2rem)] font-semibold tracking-tight text-gradient">

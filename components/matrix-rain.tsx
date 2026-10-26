@@ -44,16 +44,25 @@ export function MatrixRain() {
     const draw = (time: number) => {
       if (time - last > 55) {
         last = time;
-        context.fillStyle = "rgba(5, 5, 5, 0.16)";
-        context.fillRect(0, 0, width, height);
+        // Clear instead of painting a translucent black rect: the latter
+        // darkens the whole page and reads as an ugly mask.
+        context.clearRect(0, 0, width, height);
         context.font = `${fontSize}px "Geist Mono", monospace`;
         for (let index = 0; index < columns; index += 1) {
-          const glyph = GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+          const head = drops[index];
           const x = index * fontSize;
-          const y = drops[index] * fontSize;
-          context.fillStyle = Math.random() > 0.97 ? "rgba(52, 211, 153, 0.85)" : "rgba(16, 185, 129, 0.35)";
-          context.fillText(glyph, x, y);
-          if (y > height && Math.random() > 0.985) drops[index] = 0;
+          for (let trail = 0; trail < 7; trail += 1) {
+            const y = (head - trail) * fontSize;
+            if (y < -fontSize || y > height + fontSize) continue;
+            const glyph = GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+            const alpha = (1 - trail / 7) * 0.55;
+            context.fillStyle =
+              trail === 0
+                ? "rgba(52, 211, 153, 0.85)"
+                : `rgba(16, 185, 129, ${alpha})`;
+            context.fillText(glyph, x, y);
+          }
+          if (head * fontSize > height && Math.random() > 0.985) drops[index] = 0;
           drops[index] += 1;
         }
       }

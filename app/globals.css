@@ -119,6 +119,14 @@ html {
   overscroll-behavior: none;
 }
 
+/* The layout reserves 6rem for the fixed nav. Pull only the hero's
+   background up into that space so overscroll can never reveal a body
+   strip above the first section. */
+#home {
+  margin-top: -6rem;
+  padding-top: 6rem;
+}
+
 /* ===== Segmented scroll (all screen sizes) =====
    Each section snaps to the top on scroll.
    Sections grow with content (min-height, not fixed) so there's
@@ -138,6 +146,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: clip;
+  overscroll-behavior-y: none;
 }
 
 ::selection {
