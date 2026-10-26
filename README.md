@@ -6,7 +6,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6.svg?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Docker](https://img.shields.io/badge/Docker-2496ED.svg?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com)
 
-一个现代、快速、**中英双语**的个人作品集 + 博客模板，基于 **Next.js 16 + React 19 + Tailwind CSS 4**。暗色赛博绿风格：毛玻璃、3D 特效、访客终端、MDX 博客、后台管理、Docker 一键自部署。
+一个现代、快速、**中英双语**的个人作品集 + 博客模板，基于 **Next.js 16 + React 19 + Tailwind CSS 4 + FastAPI**。暗色赛博绿风格：毛玻璃、3D 特效、访客终端、站内 Agent 助手、MDX 博客、后台管理、Docker 单容器自部署。
 
 ## 目录
 
@@ -63,13 +63,15 @@
 - **暗色赛博绿** —— 长时间阅读不刺眼，支持亮/暗主题切换
 - **数据驱动** —— 个人数据、博客内容与代码分离，改数据不动代码
 - **隐私优先** —— 真实信息永不进 git，可放心开源
-- **部署简单** —— Docker 多阶段构建 + volume 持久化，一条命令上线
+- **站内 Agent** —— 基于个人资料、项目和博客的检索式问答，支持引用与可选 LLM
+- **部署简单** —— Docker 单容器（Next.js + FastAPI）+ volume 持久化，一条命令上线
 
 ## 安装
 
 ### 环境要求
 
 - Node.js 18+
+- Python 3.9+（Docker 镜像使用 3.12）
 - pnpm（推荐，需启用 corepack）
 
 ### 安装步骤
@@ -82,11 +84,30 @@ cd personal-site
 # 2. 安装依赖
 pnpm install
 
-# 3. 启动开发服务器
+# 3. 安装 Python 依赖（只需一次）
+python3 -m venv backend/.venv
+backend/.venv/bin/pip install -r backend/requirements.txt
+
+# 4. 一个命令同时启动 FastAPI + Next.js
 pnpm dev
 ```
 
-打开 http://localhost:3000/zh（或 `/en`）查看站点。
+打开 http://localhost:3000/zh（或 `/en`）查看站点。`pnpm dev` 会自动选择 8000–8019 中可用的 API 端口，并把 `NEXT_PUBLIC_API_BASE_URL` 注入 Next.js；Ctrl+C 会同时结束两个进程。
+
+需要单独启动时：
+
+```bash
+pnpm dev:web   # 只启动 Next.js
+pnpm dev:api   # 只启动 FastAPI（默认 8000）
+```
+
+如果 8000 被占用，`pnpm dev` 会自动切到 8001；也可以手动指定：
+
+```bash
+API_PORT=8001 WEB_PORT=3001 pnpm dev
+```
+
+开发时也可以直接用 `docker compose up --build` 启动完整单容器环境。
 
 ## 使用
 
@@ -118,6 +139,20 @@ ADMIN_PASSWORD=your-strong-password
 | `sudo hire-me` | 直达联系区块 |
 
 首次打开会重播开机日志；`Esc` 关闭，`↑↓` 翻历史，`Tab` 补全，状态跨页面保持。
+
+### 站内 Agent
+
+右下角的 `AGENT` 按钮或 `⌘J` / `Ctrl+J` 打开站内 Agent。它从个人资料、项目、经历、技术栈和博客中检索，回答会附带站内引用；没有配置 LLM 时使用本地检索模式，不会编造站外信息。
+
+可选环境变量：
+
+```bash
+AGENT_LLM_BASE_URL=https://api.deepseek.com/v1
+AGENT_LLM_API_KEY=sk-...
+AGENT_MODEL=deepseek-chat
+```
+
+不配置时 `AGENT / LOCAL` 模式仍然可用。
 
 ### 后台管理
 
@@ -205,7 +240,14 @@ SMTP_PASS=your-smtp-auth-code  # 授权码（非登录密码）
 # 1. 在项目根目录创建 .env
 cat > .env << 'EOF'
 ADMIN_PASSWORD=your-strong-password
+ADMIN_SESSION_SALT=change-me-too
+COOKIE_SECURE=true
 NEXT_PUBLIC_SITE_URL=https://your-domain.com
+
+# 可选：给站内 Agent 接 OpenAI 兼容模型
+# AGENT_LLM_BASE_URL=https://api.deepseek.com/v1
+# AGENT_LLM_API_KEY=sk-...
+# AGENT_MODEL=deepseek-chat
 EOF
 
 # 2. 构建并启动
@@ -216,7 +258,7 @@ docker compose logs -f
 docker compose down
 ```
 
-站点运行在 `http://your-server:3000`。`docker-compose.yml` 用两个命名 volume 持久化数据，容器重启、重建都不丢：
+站点运行在 `http://your-server:3000`。镜像内运行 Caddy + Next.js + FastAPI：Caddy 监听 3000，`/api/*` 直接反代到 FastAPI，其余请求反代到 Next.js。浏览器只看到一个同源端口，Next.js 不再处理任何 API。`docker-compose.yml` 用两个命名 volume 持久化数据，容器重启、重建都不丢：
 
 - `site-content` → `/app/content`（博客文章）
 - `site-data` → `/app/data`（个人信息 JSON + 阅读量 + 邮件配置）
@@ -225,7 +267,7 @@ docker compose down
 
 ### Vercel / Netlify
 
-开箱即用，直接推送 Git 仓库导入。部署前把 `NEXT_PUBLIC_SITE_URL` 改成正式域名。
+不再开箱即用：Next.js 只负责前端，API 全部在 FastAPI。平台部署需要把 Next.js 与 Python 后端拆成两个服务，并把 `NEXT_PUBLIC_API_BASE_URL` 指向 FastAPI 的公网地址。个人站推荐直接使用上面的 Docker 单容器方案。
 
 > ⚠️ 平台类部署文件系统只读，后台「在线发博 / 编辑个人信息」依赖写入 `content/` 与 `data/`，需使用 Docker 自托管。
 
@@ -238,8 +280,7 @@ personal-site/
 │  │  ├─ page.tsx                # 首页（Hero / 关于 / 经历 / 技能 / 项目 / 联系）
 │  │  ├─ blog/                   # 博客列表 / 文章页 / 标签聚合页
 │  │  └─ projects/[slug]/        # 项目详情页
-│  ├─ admin/                     # 后台管理页
-│  ├─ api/                       # contact / views / favicon / admin 系列接口
+│  ├─ admin/                     # 后台管理页（SSR 只做 cookie 门禁）
 │  ├─ layout.tsx                 # 根布局（字体、主题、toast）
 │  ├─ globals.css                # 设计系统 + 3D 特效样式
 │  ├─ sitemap.ts / robots.ts     # SEO
@@ -253,8 +294,12 @@ personal-site/
 │  └─ blog/                      # zh / en 示例文章
 ├─ lib/                          # 博客解析、MDX 编译、i18n、邮件、读写工具
 ├─ messages/                     # zh / en UI 文案
+├─ backend/                      # FastAPI：Agent、联系表单、阅读量、后台 API
 ├─ public/                       # 静态资源
-├─ Dockerfile                    # 多阶段构建
+├─ specs/                        # 功能规格与计划
+├─ Caddyfile                     # 同源入口：/api → FastAPI，其余 → Next
+├─ Dockerfile                    # Caddy + Next.js + FastAPI 单容器
+├─ start.sh                      # 容器内启动 Caddy + uvicorn + Next
 ├─ docker-compose.yml            # 一键部署
 └─ LICENSE
 ```
@@ -269,8 +314,10 @@ personal-site/
 | 内容 | MDX（next-mdx-remote）+ gray-matter + Shiki |
 | 图标 | Lucide React + React Icons |
 | 评论 | giscus |
-| 邮件 | Nodemailer |
-| 部署 | Docker（standalone 输出）+ GitHub Actions SSH 自动部署 |
+| 后端 | Python 3.9+、FastAPI、uvicorn、json5 |
+| Agent | 站内检索 + 可选 OpenAI 兼容 LLM |
+| 邮件 | Python smtplib |
+| 部署 | Docker 单容器（Next.js standalone + uvicorn）+ GitHub Actions SSH 手动部署 |
 
 ## 维护者
 

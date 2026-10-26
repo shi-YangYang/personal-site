@@ -10,6 +10,8 @@ import { ScrollProgress } from "@/components/scroll-progress";
 import { ScrollTopButton } from "@/components/scroll-top-button";
 import { ClickRipple } from "@/components/click-ripple";
 import { Particles } from "@/components/particles";
+import { MatrixRain } from "@/components/matrix-rain";
+import { AgentConsole } from "@/components/agent-console";
 import { BootLoader } from "@/components/boot-loader";
 import { Terminal } from "@/components/terminal";
 import { getPersonalData } from "@/content/data";
@@ -63,10 +65,12 @@ export default async function LangLayout({
           <BootLoader />
           <ScrollProgress />
           <Particles />
+          <MatrixRain />
           <ClickRipple />
           <CursorGlow />
           <ScrollTopButton />
           <Terminal locale={locale} personal={data} posts={posts} />
+          <AgentConsole key={locale} />
           <Navbar />
           <main className="flex-1 flex flex-col pt-24">{children}</main>
           <Footer socials={data.socials} />

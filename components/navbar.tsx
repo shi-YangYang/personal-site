@@ -7,26 +7,28 @@ import { cn } from "@/lib/utils";
 import { useT } from "./i18n-provider";
 import { LanguageSwitcher } from "./language-switcher";
 import { ThemeToggle } from "./theme-toggle";
-import { activeSectionStore } from "@/lib/active-section";
 import { terminalStore } from "@/lib/terminal-store";
-import { Menu, X, ChevronDown, TerminalSquare } from "lucide-react";
+import { agentStore } from "@/lib/agent-store";
+import { activeSectionStore } from "@/lib/active-section";
+import { isSectionId } from "@/lib/sections";
+import { Bot, Menu, X, ChevronDown, TerminalSquare } from "lucide-react";
 
 const navItems = [
   { key: "nav.home", href: "" },
-  { key: "nav.projects", href: "#projects" },
-  { key: "nav.blog", href: "/blog" },
-  { key: "nav.contact", href: "#contact" },
+  { key: "nav.projects", href: "projects" },
+  { key: "nav.blog", href: "blog" },
+  { key: "nav.contact", href: "contact" },
 ] as const;
 
 const siteMap = [
-  { path: "~/portfolio", key: "nav.home", href: "" },
-  { path: "~/portfolio#about", key: "nav.about", href: "#about" },
-  { path: "~/portfolio#experience", key: "nav.experience", href: "#experience" },
-  { path: "~/portfolio#skills", key: "nav.skills", href: "#skills" },
-  { path: "~/portfolio#projects", key: "nav.projects", href: "#projects" },
-  { path: "~/portfolio#links", key: "nav.links", href: "#links" },
-  { path: "~/portfolio/blog", key: "nav.blog", href: "/blog" },
-  { path: "~/portfolio#contact", key: "nav.contact", href: "#contact" },
+  { path: "~", key: "nav.home", href: "" },
+  { path: "~/about", key: "nav.about", href: "about" },
+  { path: "~/experience", key: "nav.experience", href: "experience" },
+  { path: "~/skills", key: "nav.skills", href: "skills" },
+  { path: "~/projects", key: "nav.projects", href: "projects" },
+  { path: "~/links", key: "nav.links", href: "links" },
+  { path: "~/blog", key: "nav.blog", href: "blog" },
+  { path: "~/contact", key: "nav.contact", href: "contact" },
 ] as const;
 
 export function Navbar() {
@@ -68,16 +70,13 @@ export function Navbar() {
   }, [dirOpen]);
 
   const basePath = `/${pathname.split("/")[1] ?? "zh"}`;
-  const isHome = pathname === basePath;
   const restPath = pathname.split("/").slice(2).filter(Boolean).join("/");
-  let pwd = "~/portfolio";
-  if (isHome) {
-    if (activeSection && activeSection !== "home") {
-      pwd = `~/portfolio#${activeSection}`;
-    }
-  } else if (restPath) {
-    pwd = `~/portfolio/${restPath}`;
-  }
+  const onSectionRoute = restPath === "" || isSectionId(restPath);
+  const pwd = onSectionRoute
+    ? activeSection && activeSection !== "home"
+      ? `~/${activeSection}`
+      : "~"
+    : `~/${restPath}`;
 
   return (
     <header
@@ -101,19 +100,21 @@ export function Navbar() {
               onClick={() => setDirOpen((v) => !v)}
               aria-haspopup="menu"
               aria-expanded={dirOpen}
-              className="flex items-center gap-2 font-mono text-sm group"
+              className="flex items-center font-mono text-sm group"
             >
-              <TerminalSquare size={16} className="text-brand-glow" />
-              <span className="text-text-primary group-hover:text-text-brand transition-colors">
-                {pwd}
+              <TerminalSquare size={16} className="mr-2 shrink-0 text-brand-glow" />
+              <span className="flex min-w-0 items-center sm:w-[200px] md:w-[220px]">
+                <span className="hidden min-w-0 truncate text-left text-text-primary transition-colors group-hover:text-text-brand sm:inline">
+                  {pwd}
+                </span>
+                <ChevronDown
+                  size={14}
+                  className={cn(
+                    "shrink-0 text-text-muted transition-transform duration-200",
+                    dirOpen && "rotate-180",
+                  )}
+                />
               </span>
-              <ChevronDown
-                size={14}
-                className={cn(
-                  "text-text-muted transition-transform duration-200",
-                  dirOpen && "rotate-180",
-                )}
-              />
             </button>
 
             {dirOpen && (
@@ -127,11 +128,14 @@ export function Navbar() {
                 </div>
                 <div className="px-2 pb-1.5 border-b border-white/5 mb-1" />
                 {siteMap.map((item) => {
-                  const href = `${basePath}${item.href}`;
+                  const href = item.href
+                    ? `${basePath}/${item.href}`
+                    : basePath;
                   return (
                     <Link
                       key={item.path}
                       href={href}
+                      scroll={false}
                       role="menuitem"
                       onClick={() => setDirOpen(false)}
                       className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg hover:bg-brand-primary/10 transition-colors"
@@ -151,14 +155,14 @@ export function Navbar() {
 
           <ul className="hidden md:flex items-center gap-1">
             {navItems.map((item) => {
-              const href =
-                item.href.startsWith("#")
-                  ? `${basePath}${item.href}`
-                  : `${basePath}${item.href}`;
+              const href = item.href
+                ? `${basePath}/${item.href}`
+                : basePath;
               return (
                 <li key={item.key}>
                   <Link
                     href={href}
+                    scroll={false}
                     className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-brand transition-colors"
                   >
                     {t(item.key)}
@@ -177,6 +181,14 @@ export function Navbar() {
             >
               <TerminalSquare size={18} />
             </button>
+            <button
+              type="button"
+              onClick={() => agentStore.open()}
+              className="p-2 text-text-secondary hover:text-text-brand transition-colors"
+              aria-label="Open site agent"
+            >
+              <Bot size={18} />
+            </button>
             <ThemeToggle />
             <LanguageSwitcher />
             <button
@@ -194,14 +206,14 @@ export function Navbar() {
           <div className="md:hidden mt-2 glass rounded-2xl border-brand-primary/20 p-2">
             <ul className="flex flex-col">
               {navItems.map((item) => {
-                const href =
-                  item.href.startsWith("#")
-                    ? `${basePath}${item.href}`
-                    : `${basePath}${item.href}`;
+                const href = item.href
+                  ? `${basePath}/${item.href}`
+                  : basePath;
                 return (
                   <li key={item.key}>
                     <Link
                       href={href}
+                      scroll={false}
                       onClick={() => setOpen(false)}
                       className="block px-4 py-2.5 text-sm text-text-secondary hover:text-text-brand hover:bg-brand-primary/5 rounded-lg transition-colors"
                     >

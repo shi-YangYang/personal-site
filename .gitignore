@@ -61,3 +61,8 @@ next-env.d.ts
 # 个人博客文章（示例文章保留在 content/blog/*/，你自己的放在 _local/）
 content/blog/**/_local/
 content/blog/**/_drafts/
+
+# Python backend
+backend/.venv/
+backend/**/__pycache__/
+**/*.pyc

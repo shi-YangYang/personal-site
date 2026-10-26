@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Plus, Trash2, Save, ArrowUp, ArrowDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { apiUrl } from "@/lib/api";
 import { TagInput } from "./tag-input";
 import type {
   PersonalDataRecord,
@@ -52,7 +53,7 @@ export function PersonalEditor() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch("/api/admin/personal");
+        const res = await fetch(apiUrl("/api/admin/personal"), { credentials: "include" });
         if (!res.ok) throw new Error();
         const json = (await res.json()) as Record<Locale, PersonalDataRecord>;
         setData((prev) => ({
@@ -94,8 +95,9 @@ export function PersonalEditor() {
     setSaving(true);
     setStatus({ type: "idle", text: "" });
     try {
-      const res = await fetch("/api/admin/personal", {
+      const res = await fetch(apiUrl("/api/admin/personal"), {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Save } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { apiUrl } from "@/lib/api";
 
 const inputCls =
   "w-full rounded-lg border border-brand-primary/20 bg-bg-elevated px-3 py-2 text-sm outline-none focus:border-brand-primary/60 transition-colors";
@@ -45,7 +46,7 @@ export function MailEditor() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch("/api/admin/mail");
+        const res = await fetch(apiUrl("/api/admin/mail"), { credentials: "include" });
         if (!res.ok) throw new Error();
         const json = (await res.json()) as MailForm;
         setForm({ ...emptyForm, ...json });
@@ -64,8 +65,9 @@ export function MailEditor() {
     setSaving(true);
     setStatus({ type: "idle", text: "" });
     try {
-      const res = await fetch("/api/admin/mail", {
+      const res = await fetch(apiUrl("/api/admin/mail"), {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });

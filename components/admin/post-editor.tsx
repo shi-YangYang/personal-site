@@ -5,6 +5,7 @@ import { Rocket, Sparkles } from "lucide-react";
 import { EmojiPicker } from "./emoji-picker";
 import { TagInput } from "./tag-input";
 import { cn } from "@/lib/utils";
+import { apiUrl } from "@/lib/api";
 import type { EmojiItem } from "@/lib/emoji";
 
 const inputCls =
@@ -83,8 +84,9 @@ export function PostEditor() {
 
     setSaving(true);
     try {
-      const res = await fetch("/api/admin/posts", {
+      const res = await fetch(apiUrl("/api/admin/posts"), {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });

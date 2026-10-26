@@ -8,6 +8,7 @@ import { FaGithub, FaQq, FaXTwitter } from "react-icons/fa6";
 import { Mail, ArrowUp } from "lucide-react";
 import { CsdnIcon } from "./csdn-icon";
 import { cn } from "@/lib/utils";
+import { isSectionId } from "@/lib/sections";
 
 const GithubIcon = FaGithub as unknown as React.FC<{ size?: number }>;
 const QqIcon = FaQq as unknown as React.FC<{ size?: number }>;
@@ -15,18 +16,18 @@ const XIcon = FaXTwitter as unknown as React.FC<{ size?: number }>;
 
 const quickLinks = [
   { key: "nav.home", href: "" },
-  { key: "nav.blog", href: "/blog" },
-  { key: "nav.projects", href: "#projects" },
-  { key: "nav.contact", href: "#contact" },
+  { key: "nav.blog", href: "blog" },
+  { key: "nav.projects", href: "projects" },
+  { key: "nav.contact", href: "contact" },
 ] as const;
 
 const sectionLinks = [
-  { key: "nav.about", href: "#about" },
-  { key: "nav.experience", href: "#experience" },
-  { key: "nav.skills", href: "#skills" },
-  { key: "nav.projects", href: "#projects" },
-  { key: "nav.links", href: "#links" },
-  { key: "nav.contact", href: "#contact" },
+  { key: "nav.about", href: "about" },
+  { key: "nav.experience", href: "experience" },
+  { key: "nav.skills", href: "skills" },
+  { key: "nav.projects", href: "projects" },
+  { key: "nav.links", href: "links" },
+  { key: "nav.contact", href: "contact" },
 ] as const;
 
 export function Footer({ socials }: { socials: {
@@ -40,8 +41,10 @@ export function Footer({ socials }: { socials: {
   const { locale } = useI18n();
   const pathname = usePathname();
   const year = new Date().getFullYear();
-  // Only the home page gets segmented-snap footer.
-  const snap = pathname === `/${locale}`;
+  // Home and section routes all render the segmented home layout.
+  const parts = pathname.split("/").filter(Boolean);
+  const sectionRoute = parts.length === 2 && isSectionId(parts[1]);
+  const snap = pathname === `/${locale}` || sectionRoute;
   const home = `/${locale}`;
 
   const items = [
@@ -68,7 +71,7 @@ export function Footer({ socials }: { socials: {
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-2 font-mono text-sm">
               <span className="text-brand-glow">▸</span>
-              <span className="text-text-primary">~/portfolio</span>
+              <span className="text-text-primary">~</span>
             </div>
             <p className="text-sm text-text-secondary leading-relaxed max-w-sm">
               {t("footer.bio")}
@@ -96,7 +99,10 @@ export function Footer({ socials }: { socials: {
             <ul className="space-y-2">
               {quickLinks.map((l) => (
                 <li key={l.key}>
-                  <FooterLink href={`${home}${l.href}`} label={t(l.key)} />
+                  <FooterLink
+                    href={l.href ? `${home}/${l.href}` : home}
+                    label={t(l.key)}
+                  />
                 </li>
               ))}
             </ul>
@@ -109,7 +115,10 @@ export function Footer({ socials }: { socials: {
             <ul className="space-y-2">
               {sectionLinks.map((l) => (
                 <li key={l.key}>
-                  <FooterLink href={`${home}${l.href}`} label={t(l.key)} />
+                  <FooterLink
+                    href={l.href ? `${home}/${l.href}` : home}
+                    label={t(l.key)}
+                  />
                 </li>
               ))}
             </ul>
@@ -138,6 +147,7 @@ function FooterLink({ href, label }: { href: string; label: string }) {
   return (
     <Link
       href={href}
+      scroll={false}
       className="group inline-flex items-center gap-2 text-sm text-text-secondary hover:text-text-brand transition-colors"
     >
       <span className="text-brand-glow/40 group-hover:text-brand-glow transition-colors">

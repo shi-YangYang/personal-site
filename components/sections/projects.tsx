@@ -45,13 +45,14 @@ export function ProjectsSection({
               key={project.title}
               delay={0.05 * i}
               className={cn(
-                project.size === "large" && "md:col-span-2 md:row-span-2",
+                project.size === "large" && "md:col-span-3",
               )}
             >
               <TiltCard className="h-full rounded-2xl overflow-hidden">
                 <BorderBeam className="h-full rounded-2xl" duration={6} delay={i * 1.5}>
                   <SpotlightCard className="h-full" solid>
                     <ProjectCardInner
+                      index={i}
                       title={project.title}
                       description={project.description}
                       tags={project.tags}
@@ -74,6 +75,7 @@ export function ProjectsSection({
 }
 
 function ProjectCardInner({
+  index,
   title,
   description,
   tags,
@@ -84,6 +86,7 @@ function ProjectCardInner({
   codeLabel,
   detailsLabel,
 }: {
+  index: number;
   title: string;
   description: string;
   tags: string[];
@@ -97,12 +100,20 @@ function ProjectCardInner({
   return (
     <div
       className={cn(
-        "group p-6 h-full overflow-hidden",
+        "group relative p-6 h-full overflow-hidden",
         "hover:-translate-y-0.5 transition-transform duration-300",
-        large && "min-h-[280px] flex flex-col justify-between",
+        large && "min-h-[230px] flex flex-col justify-between",
       )}
     >
-      <div className="relative">
+      {large && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute right-8 top-1/2 -translate-y-1/2 font-mono text-[clamp(6rem,12vw,10rem)] font-bold leading-none text-brand-primary/10"
+        >
+          {String(index + 1).padStart(2, "0")}
+        </span>
+      )}
+      <div className={cn("relative", large && "max-w-3xl")}>
         <h3
           className={cn(
             "font-semibold tracking-tight",
@@ -116,7 +127,7 @@ function ProjectCardInner({
         </p>
       </div>
 
-      <div className="relative mt-6 flex items-end justify-between gap-3 flex-wrap">
+      <div className={cn("relative mt-6 flex items-end justify-between gap-3 flex-wrap", large && "max-w-3xl")}>
         <div className="flex flex-wrap gap-1.5">
           {tags.map((tag) => (
             <span
