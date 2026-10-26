@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { activeSectionStore } from "@/lib/active-section";
 
 export function SectionScroll({ section }: { section?: string }) {
   useEffect(() => {
@@ -15,6 +16,7 @@ export function SectionScroll({ section }: { section?: string }) {
   }, []);
 
   useEffect(() => {
+    activeSectionStore.set(section ?? "home");
     if (!section) return;
     const target = document.getElementById(section);
     if (!target) return;

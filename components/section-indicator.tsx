@@ -25,6 +25,11 @@ export function SectionIndicator({
           if (entry.isIntersecting) {
             setActive(item.id);
             activeSectionStore.set(item.id);
+            const href =
+              item.id === "home" ? `/${locale}` : `/${locale}/${item.id}`;
+            if (window.location.pathname !== href) {
+              window.history.replaceState(null, "", href);
+            }
           }
         },
         { threshold: 0.5 },
@@ -33,7 +38,7 @@ export function SectionIndicator({
       observers.push(obs);
     }
     return () => observers.forEach((o) => o.disconnect());
-  }, [items]);
+  }, [items, locale]);
 
   return (
     <nav

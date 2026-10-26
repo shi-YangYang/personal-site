@@ -9,6 +9,8 @@ import { LanguageSwitcher } from "./language-switcher";
 import { ThemeToggle } from "./theme-toggle";
 import { terminalStore } from "@/lib/terminal-store";
 import { agentStore } from "@/lib/agent-store";
+import { activeSectionStore } from "@/lib/active-section";
+import { isSectionId } from "@/lib/sections";
 import { Bot, Menu, X, ChevronDown, TerminalSquare } from "lucide-react";
 
 const navItems = [
@@ -35,7 +37,12 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [dirOpen, setDirOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
   const dirRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    return activeSectionStore.subscribe(setActiveSection);
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -64,7 +71,12 @@ export function Navbar() {
 
   const basePath = `/${pathname.split("/")[1] ?? "zh"}`;
   const restPath = pathname.split("/").slice(2).filter(Boolean).join("/");
-  const pwd = restPath ? `~/${restPath}` : "~";
+  const onSectionRoute = restPath === "" || isSectionId(restPath);
+  const pwd = onSectionRoute
+    ? activeSection && activeSection !== "home"
+      ? `~/${activeSection}`
+      : "~"
+    : `~/${restPath}`;
 
   return (
     <header
