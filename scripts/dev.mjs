@@ -73,19 +73,29 @@ let api;
 let web;
 let stopping = false;
 
+function killTree(child, signal = "SIGTERM") {
+  if (!child?.pid) return;
+  try {
+    // Negative PID targets the detached process group, so Next's
+    // next-server child and uvicorn's reloader child are both stopped.
+    process.kill(-child.pid, signal);
+  } catch {
+    try {
+      child.kill(signal);
+    } catch {
+      // already gone
+    }
+  }
+}
+
 function stop(code = 0) {
   if (stopping) return;
   stopping = true;
-  for (const child of [web, api]) {
-    if (child && !child.killed) {
-      try {
-        child.kill("SIGTERM");
-      } catch {
-        // ignore
-      }
-    }
-  }
-  setTimeout(() => process.exit(code), 700);
+  for (const child of [web, api]) killTree(child);
+  setTimeout(() => {
+    for (const child of [web, api]) killTree(child, "SIGKILL");
+    process.exit(code);
+  }, 1_200);
 }
 
 async function main() {
@@ -103,7 +113,11 @@ async function main() {
   api = spawn(
     uvicorn,
     ["backend.main:app", "--reload", "--host", "127.0.0.1", "--port", String(apiPort)],
-    { cwd: root, env: { ...process.env, PYTHONUNBUFFERED: "1" } },
+    {
+      cwd: root,
+      env: { ...process.env, PYTHONUNBUFFERED: "1" },
+      detached: true,
+    },
   );
   prefix(api, "api");
 
@@ -118,6 +132,7 @@ async function main() {
 
   web = spawn(nextBin, ["dev", "-p", String(webPort)], {
     cwd: root,
+    detached: true,
     env: {
       ...process.env,
       NEXT_PUBLIC_API_BASE_URL: `http://localhost:${apiPort}`,
