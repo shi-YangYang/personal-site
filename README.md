@@ -5,6 +5,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4.svg?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6.svg?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Docker](https://img.shields.io/badge/Docker-2496ED.svg?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com)
+[![CI](https://github.com/shi-YangYang/personal-site/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/shi-YangYang/personal-site/actions/workflows/ci.yml)
 
 一个现代、快速、**中英双语**的个人作品集 + 博客模板，基于 **Next.js 16 + React 19 + Tailwind CSS 4 + FastAPI**。暗色赛博绿风格：毛玻璃、3D 特效、访客终端、站内 Agent 助手、MDX 博客、后台管理、Docker 单容器自部署。
 
@@ -257,6 +258,10 @@ docker compose up -d --build
 docker compose logs -f
 docker compose down
 ```
+
+> Docker 默认使用官方 PyPI。若服务器访问 PyPI 不稳定，可在 `.env` 中设置
+> `PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple` 和
+> `PIP_TRUSTED_HOST=pypi.tuna.tsinghua.edu.cn` 后重新构建。
 
 站点运行在 `http://your-server:3000`。镜像内运行 Caddy + Next.js + FastAPI：Caddy 监听 3000，`/api/*` 直接反代到 FastAPI，其余请求反代到 Next.js。浏览器只看到一个同源端口，Next.js 不再处理任何 API。`docker-compose.yml` 用两个命名 volume 持久化数据，容器重启、重建都不丢：
 
