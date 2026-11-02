@@ -14,6 +14,19 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            set -e
             cd /root/personal-site
             git pull
+
+            STAMP=$(date +%Y%m%d-%H%M%S)
+            mkdir -p /root/personal-site/backups
+            docker run --rm \
+              -v personal-site_site-data:/from:ro \
+              -v /root/personal-site/backups:/to \
+              alpine:3.20 sh -c "mkdir -p /to/$STAMP/data && cp -a /from/. /to/$STAMP/data/"
+            docker run --rm \
+              -v personal-site_site-content:/from:ro \
+              -v /root/personal-site/backups:/to \
+              alpine:3.20 sh -c "mkdir -p /to/$STAMP/content && cp -a /from/. /to/$STAMP/content/"
+
             docker compose up -d --build

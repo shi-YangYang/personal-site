@@ -259,6 +259,8 @@ docker compose logs -f
 docker compose down
 ```
 
+> ⚠️ 不要重命名项目目录，也不要执行 `docker compose down -v`。`docker-compose.yml` 已固定项目名 `personal-site`，部署 workflow 会在构建前自动备份 `site-data` 与 `site-content` 到 `/root/personal-site/backups/`。
+
 > Docker 默认使用官方 PyPI。若服务器访问 PyPI 不稳定，可在 `.env` 中设置
 > `PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple` 和
 > `PIP_TRUSTED_HOST=pypi.tuna.tsinghua.edu.cn` 后重新构建。
