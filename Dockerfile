@@ -36,13 +36,19 @@ RUN pnpm exec next build --webpack
 
 # ---------- Python dependencies ----------
 FROM python:3.12-slim-bookworm AS pydeps
-ENV PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple \
-    PIP_TRUSTED_HOST=pypi.tuna.tsinghua.edu.cn \
-    PIP_DEFAULT_TIMEOUT=60
+ARG PIP_INDEX_URL=
+ARG PIP_TRUSTED_HOST=
+ENV PIP_DEFAULT_TIMEOUT=60
 WORKDIR /app
 COPY backend/requirements.txt ./backend/requirements.txt
 RUN python -m venv /opt/venv \
-  && /opt/venv/bin/pip install --no-cache-dir -r backend/requirements.txt
+  && if [ -n "$PIP_INDEX_URL" ] && [ -n "$PIP_TRUSTED_HOST" ]; then \
+       /opt/venv/bin/pip install --no-cache-dir --index-url "$PIP_INDEX_URL" --trusted-host "$PIP_TRUSTED_HOST" -r backend/requirements.txt; \
+     elif [ -n "$PIP_INDEX_URL" ]; then \
+       /opt/venv/bin/pip install --no-cache-dir --index-url "$PIP_INDEX_URL" -r backend/requirements.txt; \
+     else \
+       /opt/venv/bin/pip install --no-cache-dir -r backend/requirements.txt; \
+     fi
 
 # ---------- Runtime ----------
 FROM python:3.12-slim-bookworm AS runner

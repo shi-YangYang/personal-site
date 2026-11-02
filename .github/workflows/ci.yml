@@ -69,3 +69,15 @@ jobs:
 
       - name: Import FastAPI app
         run: python -c "from backend.main import app; assert app.title"
+
+
+  docker:
+    name: Docker (build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t personal-site:ci .
