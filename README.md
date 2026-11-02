@@ -1,339 +1,144 @@
-# Personal Site
+<p align="center">
+  <img src="./public/favicon.svg" width="72" height="72" alt="Personal Site icon" />
+</p>
 
-[![Next.js](https://img.shields.io/badge/Next.js-16-000000.svg?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org)
-[![React](https://img.shields.io/badge/React-19-61DAFB.svg?style=flat-square&logo=react&logoColor=black)](https://react.dev)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4.svg?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6.svg?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![Docker](https://img.shields.io/badge/Docker-2496ED.svg?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com)
-[![CI](https://github.com/shi-YangYang/personal-site/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/shi-YangYang/personal-site/actions/workflows/ci.yml)
+<h1 align="center">Personal Site</h1>
 
-一个现代、快速、**中英双语**的个人作品集 + 博客模板，基于 **Next.js 16 + React 19 + Tailwind CSS 4 + FastAPI**。暗色赛博绿风格：毛玻璃、3D 特效、访客终端、站内 Agent 助手、MDX 博客、后台管理、Docker 单容器自部署。
+<p align="center">
+  A bilingual personal site, blog, and site-native agent.<br />
+  One repository, one container.
+</p>
 
-## 目录
+<p align="center">
+  <a href="https://nextjs.org"><img src="https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js 16" /></a>
+  <a href="https://www.typescriptlang.org"><img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript 5" /></a>
+  <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind CSS 4" /></a>
+  <a href="https://fastapi.tiangolo.com"><img src="https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI" /></a>
+  <a href="https://www.docker.com"><img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker" /></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-10b981?style=flat-square" alt="MIT License" /></a>
+</p>
 
-- [安全](#安全)
-- [背景](#背景)
-- [安装](#安装)
-- [使用](#使用)
-  - [快速开始](#快速开始)
-  - [后台管理](#后台管理)
-  - [自定义](#自定义)
-- [部署](#部署)
-  - [Docker 自托管](#docker-自托管)
-  - [Vercel / Netlify](#vercel--netlify)
-- [项目结构](#项目结构)
-- [技术栈](#技术栈)
-- [维护者](#维护者)
-- [贡献](#贡献)
-- [许可证](#许可证)
+## Overview
 
-## 安全
+Personal Site is a self-hosted portfolio and blog for developers who want to own the full stack. It pairs a dark, editorial frontend with a Python API, file-based content, and an agent that answers from the site's own material.
 
-项目设计为「**可以安全地开源**」——你的真实个人信息永远只存在于本地，不会提交到仓库。
+There is no database and no external CMS. Profile data, projects, posts, and runtime settings live as JSON and MDX, with a single Docker container for deployment.
 
-### 会提交到公共仓库的内容
+## Features
 
-| 路径 | 内容 |
-|------|------|
-| `content/data/personal.zh.ts` | 仅占位数据（示例公司、示例项目、通用简介） |
-| `content/data/personal.en.ts` | 仅占位数据 |
-| `content/blog/*/hello-world.mdx` | 示例博客文章 |
-| `.env.example` | 仅变量名，不含真实值 |
-| `messages/*.json` | UI 文案（导航、按钮等），不含个人信息 |
+- **Bilingual by default** — Chinese and English share one content model. Sections are real routes such as `/zh/projects` and `/en/about`, not hash links.
+- **Agent grounded in the site** — Answers are retrieved from the profile, projects, experience, and posts, with citations. Open it with the `AGENT` control or `⌘J`; local retrieval works without a key, and an OpenAI-compatible LLM is optional.
+- **Terminal with real data** — Press `~` or `⌘K` to open a shell for navigation, view counts, theme, and language. It reads the same content as the rest of the site.
+- **Write in MDX, edit in the browser** — Posts support frontmatter, tags, reading time, code highlighting, and optional giscus comments. The `/admin` panel edits the profile, posts, and mail settings without a database.
+- **No database to operate** — `content/` and `data/` are the source of truth. Backups are plain files.
+- **One container, one port** — Caddy serves the public entry point, routes `/api/*` to FastAPI, and sends everything else to Next.js.
 
-### 只留在本地（已 gitignore）
+## Architecture
 
-| 路径 | 内容 |
-|------|------|
-| `data/personal.local.json` | 你的真实信息，后台在线编辑后生成 |
-| `data/views.json` | 阅读量统计 |
-| `data/mail.json` | 邮件通知 SMTP 配置 |
-| `content/blog/**/_local/` | 你的真实博客文章 |
-| `content/blog/**/_drafts/` | 草稿文章 |
-| `.env` / `.env.local` | 环境变量（含管理密码） |
+```mermaid
+flowchart LR
+  B[Browser] --> C[Caddy :3000]
+  C -->|/api/*| F[FastAPI :8000]
+  C -->|pages and assets| N[Next.js :3001]
+  F --> D[(data/ volume)]
+  F --> K[(content/ volume)]
+  N --> D
+  N --> K
+```
 
-别人克隆你的仓库后，只能得到占位数据；配置 `ADMIN_PASSWORD` 后登录 `/admin` 填入自己的信息，网站就变成 TA 的了。**你可以放心 `git add .` 和 `git commit`**。
+The image runs all three processes in one container. `site-data` stores the profile, mail configuration, and view counts; `site-content` stores posts. Both are mounted as volumes in Docker.
 
-## 背景
+## Quick Start
 
-这个项目的出发点是：一个可以完全掌控、且能安全开源的现代个人网站。它把作品展示、技术博客、后台管理整合进一个仓库，覆盖从本地开发到服务器部署的完整流程。
-
-设计目标：
-
-- **内容优先** —— 不做花哨的装饰，让信息清晰易读
-- **暗色赛博绿** —— 长时间阅读不刺眼，支持亮/暗主题切换
-- **数据驱动** —— 个人数据、博客内容与代码分离，改数据不动代码
-- **隐私优先** —— 真实信息永不进 git，可放心开源
-- **站内 Agent** —— 基于个人资料、项目和博客的检索式问答，支持引用与可选 LLM
-- **部署简单** —— Docker 单容器（Next.js + FastAPI）+ volume 持久化，一条命令上线
-
-## 安装
-
-### 环境要求
-
-- Node.js 18+
-- Python 3.9+（Docker 镜像使用 3.12）
-- pnpm（推荐，需启用 corepack）
-
-### 安装步骤
+### Docker
 
 ```bash
-# 1. 克隆仓库
-git clone https://github.com/<your-name>/personal-site.git
+git clone https://github.com/shi-YangYang/personal-site.git
 cd personal-site
 
-# 2. 安装依赖
+cp .env.example .env
+# Set ADMIN_PASSWORD and ADMIN_SESSION_SALT before production use.
+
+docker compose up -d --build
+```
+
+Open [http://localhost:3000/zh](http://localhost:3000/zh). The site runs with placeholder content until you fill in your own profile through `/admin` or `data/personal.local.json`.
+
+### Local development
+
+Requires Node.js 20.9+, Python 3.9+, and pnpm.
+
+```bash
 pnpm install
 
-# 3. 安装 Python 依赖（只需一次）
 python3 -m venv backend/.venv
 backend/.venv/bin/pip install -r backend/requirements.txt
 
-# 4. 一个命令同时启动 FastAPI + Next.js
 pnpm dev
 ```
 
-打开 http://localhost:3000/zh（或 `/en`）查看站点。`pnpm dev` 会自动选择 8000–8019 中可用的 API 端口，并把 `NEXT_PUBLIC_API_BASE_URL` 注入 Next.js；Ctrl+C 会同时结束两个进程。
+`pnpm dev` starts FastAPI and Next.js together, chooses an available API port, and injects `NEXT_PUBLIC_API_BASE_URL`. Open [http://localhost:3000/zh](http://localhost:3000/zh).
 
-需要单独启动时：
+## Configuration
+
+Start from [`.env.example`](./.env.example). The most important variables:
+
+| Variable | Purpose |
+| --- | --- |
+| `ADMIN_PASSWORD` | Enables `/admin`. Leave unset to keep the admin panel disabled. |
+| `ADMIN_SESSION_SALT` | Shared session salt; must match between Next.js and FastAPI. |
+| `COOKIE_SECURE` | Set to `true` when serving over HTTPS. |
+| `NEXT_PUBLIC_SITE_URL` | Canonical URL used for metadata and the sitemap. |
+| `AGENT_LLM_BASE_URL`, `AGENT_LLM_API_KEY`, `AGENT_MODEL` | Optional OpenAI-compatible model for the agent. Without them, local retrieval is used. |
+| `SMTP_*` | Optional contact-form email notifications. |
+
+## Privacy
+
+The repository ships with placeholder content. Real profile data, mail credentials, view counts, and local drafts stay out of Git:
+
+```text
+data/personal.local.json
+data/mail.json
+data/views.json
+content/blog/**/_local/
+content/blog/**/_drafts/
+```
+
+Only the placeholder files in `content/data/` and the sample posts are committed. The site is safe to fork and customize without publishing personal information.
+
+## Project structure
+
+```text
+app/[lang]/          Bilingual pages and section routes
+app/admin/           Cookie-gated admin panel
+backend/             FastAPI: agent, contact, views, admin API
+components/          UI, sections, terminal, agent console
+content/             Placeholder profile data and MDX posts
+data/                Runtime data (gitignored)
+lib/                 Content loading, blog parsing, API client
+Caddyfile            Public entry point
+Dockerfile           Caddy + Next.js + FastAPI image
+docker-compose.yml   Volumes, healthcheck, runtime configuration
+```
+
+The agent implementation is documented in the [spec](specs/spec-002-cyber-agent/spec.md) and [acceptance record](specs/spec-002-cyber-agent/acceptance.md).
+
+## Deployment
+
+Docker Compose is the supported deployment path:
 
 ```bash
-pnpm dev:web   # 只启动 Next.js
-pnpm dev:api   # 只启动 FastAPI（默认 8000）
-```
-
-如果 8000 被占用，`pnpm dev` 会自动切到 8001；也可以手动指定：
-
-```bash
-API_PORT=8001 WEB_PORT=3001 pnpm dev
-```
-
-开发时也可以直接用 `docker compose up --build` 启动完整单容器环境。
-
-## 使用
-
-### 快速开始
-
-站点默认显示占位数据。配置环境变量以启用后台：
-
-```bash
-# 复制环境变量模板
-cp .env.example .env.local
-# 编辑 .env.local，至少设置：
-ADMIN_PASSWORD=your-strong-password
-```
-
-未配置 `ADMIN_PASSWORD` 时后台自动禁用，不影响前台展示。
-
-### 访客终端
-
-全站任意页面按 `~`（或 `⌘K`，或点导航栏终端图标）唤出访客终端——一个接了真实数据的 shell，不是装饰：
-
-| 命令 | 作用 |
-|------|------|
-| `help` | 列出全部命令（彩蛋不止一个） |
-| `ls blog` / `ls projects` / `ls socials` | 看文章 / 项目 / 友链清单 |
-| `open <slug>` / `cd contact` | 跳转文章、项目详情或页面区块 |
-| `cat about` / `cat resume` / `cat contact` | 读简介、git log 风格的经历、联系方式 |
-| `views [slug]` | 查真实阅读量（`/api/views` 接口） |
-| `theme light` / `lang en` | 切主题、切语言 |
-| `sudo hire-me` | 直达联系区块 |
-
-首次打开会重播开机日志；`Esc` 关闭，`↑↓` 翻历史，`Tab` 补全，状态跨页面保持。
-
-### 站内 Agent
-
-右下角的 `AGENT` 按钮或 `⌘J` / `Ctrl+J` 打开站内 Agent。它从个人资料、项目、经历、技术栈和博客中检索，回答会附带站内引用；没有配置 LLM 时使用本地检索模式，不会编造站外信息。
-
-可选环境变量：
-
-```bash
-AGENT_LLM_BASE_URL=https://api.deepseek.com/v1
-AGENT_LLM_API_KEY=sk-...
-AGENT_MODEL=deepseek-chat
-```
-
-不配置时 `AGENT / LOCAL` 模式仍然可用。
-
-### 后台管理
-
-访问 `/admin` 登录后台，三个标签页：
-
-| 标签 | 功能 |
-|------|------|
-| 博客文章 | 在线发布/编辑文章，支持中英双语、Markdown 表情短代码、标签逐个添加 |
-| 个人信息 | 在线修改站点标题、姓名、简介、社交链接、技能、经历、项目、友链（中英双语分开维护） |
-| 邮件通知 | 配置 SMTP，访客留言自动发送到你的邮箱 |
-
-所有修改保存后通过 `revalidatePath` 即时刷新前台，无需重启。
-
-### 自定义
-
-#### 个人信息
-
-后台「个人信息」标签页在线修改全部个人数据，保存到 `data/personal.local.json`（已 gitignore）。读取优先级：JSON 数据 > 占位数据（`personal.zh.ts` / `personal.en.ts`）。
-
-#### UI 文案
-
-编辑 `messages/zh.json` 和 `messages/en.json`，用于导航、按钮、表单标签等。
-
-#### 站点图标
-
-把 `favicon.ico` / `favicon.png` / `favicon.svg` / `icon.png` 任一放进 `data/` 目录（已 gitignore），`/api/favicon` 会动态读取，无需重建。
-
-#### 主题配色
-
-在 `app/globals.css` 中修改 `:root`（暗色）和 `.light`（亮色）的 CSS 变量：
-
-```css
---brand-primary: #10b981;     /* 主色 */
---brand-glow: #34d399;        /* 辉光 / 高亮 */
---gradient-brand: linear-gradient(135deg, #10b981 0%, #22d3ee 100%);
-```
-
-#### 添加博客文章
-
-在 `content/blog/zh/` 和 `content/blog/en/` 下各创建一个 `.mdx` 文件（slug 需一致），或直接在后台「博客文章」标签页发布：
-
-```mdx
----
-title: "我的文章标题"
-description: "用于 SEO 和摘要"
-date: "2026-08-02"
-tags: ["tag1", "tag2"]
----
-
-文章内容。支持 **Markdown**、GFM 表格、代码高亮，以及 `:rocket:` 表情短代码。
-```
-
-#### 开启评论（giscus）
-
-在 GitHub 仓库启用 Discussions，到 [giscus.app](https://giscus.app) 生成配置，填入 `.env.local`：
-
-```bash
-NEXT_PUBLIC_GISCUS_REPO=owner/repo
-NEXT_PUBLIC_GISCUS_REPO_ID=
-NEXT_PUBLIC_GISCUS_CATEGORY=Announcements
-NEXT_PUBLIC_GISCUS_CATEGORY_ID=
-```
-
-未配置时评论组件自动隐藏。
-
-#### 联系表单邮件通知
-
-访客在「联系」区块提交留言后，可通过 SMTP 发送到你的邮箱。在后台「邮件通知」标签页配置，或写入环境变量：
-
-```bash
-SMTP_HOST=smtp.qq.com          # QQ 邮箱；163: smtp.163.com；企业微信: smtp.exmail.qq.com
-SMTP_PORT=465                  # SSL 端口，一般为 465
-SMTP_SECURE=true
-SMTP_USER=your@qq.com          # 发件邮箱（需开启 SMTP 服务）
-SMTP_PASS=your-smtp-auth-code  # 授权码（非登录密码）
-```
-
-> QQ 邮箱：设置 → 账号 → 开启「SMTP 服务」，会生成 16 位授权码，填到 `SMTP_PASS`。未配置时留言记录到容器日志，不影响表单提交。
-
-## 部署
-
-### Docker 自托管
-
-```bash
-# 1. 在项目根目录创建 .env
-cat > .env << 'EOF'
-ADMIN_PASSWORD=your-strong-password
-ADMIN_SESSION_SALT=change-me-too
-COOKIE_SECURE=true
-NEXT_PUBLIC_SITE_URL=https://your-domain.com
-
-# 可选：给站内 Agent 接 OpenAI 兼容模型
-# AGENT_LLM_BASE_URL=https://api.deepseek.com/v1
-# AGENT_LLM_API_KEY=sk-...
-# AGENT_MODEL=deepseek-chat
-EOF
-
-# 2. 构建并启动
 docker compose up -d --build
-
-# 查看日志 / 停止
-docker compose logs -f
-docker compose down
 ```
 
-> ⚠️ 不要重命名项目目录，也不要执行 `docker compose down -v`。`docker-compose.yml` 已固定项目名 `personal-site`，部署 workflow 会在构建前自动备份 `site-data` 与 `site-content` 到 `/root/personal-site/backups/`。
+Only port `3000` is exposed. Keep the `site-data` and `site-content` volumes; do not run `docker compose down -v`.
 
-> Docker 默认使用官方 PyPI。若服务器访问 PyPI 不稳定，可在 `.env` 中设置
-> `PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple` 和
-> `PIP_TRUSTED_HOST=pypi.tuna.tsinghua.edu.cn` 后重新构建。
+Deployments are manual through **Actions → Deploy → Run workflow**. The workflow backs up both volumes before rebuilding. Pull requests run CI for web lint/build, backend import/compile, and a Docker image build.
 
-站点运行在 `http://your-server:3000`。镜像内运行 Caddy + Next.js + FastAPI：Caddy 监听 3000，`/api/*` 直接反代到 FastAPI，其余请求反代到 Next.js。浏览器只看到一个同源端口，Next.js 不再处理任何 API。`docker-compose.yml` 用两个命名 volume 持久化数据，容器重启、重建都不丢：
+## Contributing
 
-- `site-content` → `/app/content`（博客文章）
-- `site-data` → `/app/data`（个人信息 JSON + 阅读量 + 邮件配置）
+Pull requests target `dev`. Keep changes focused, and open an issue before larger changes. CI runs on every PR targeting `dev` or `main`.
 
-推送到 `main` 不会自动部署。需要部署时，在 GitHub 仓库的 **Actions → Deploy → Run workflow** 手动触发（`.github/workflows/deploy.yml`）：服务器上 `git pull` + `docker compose up -d --build`。需在仓库 Secrets 配置 `SSH_HOST` / `SSH_USER` / `SSH_PRIVATE_KEY`。
+## License
 
-### Vercel / Netlify
-
-不再开箱即用：Next.js 只负责前端，API 全部在 FastAPI。平台部署需要把 Next.js 与 Python 后端拆成两个服务，并把 `NEXT_PUBLIC_API_BASE_URL` 指向 FastAPI 的公网地址。个人站推荐直接使用上面的 Docker 单容器方案。
-
-> ⚠️ 平台类部署文件系统只读，后台「在线发博 / 编辑个人信息」依赖写入 `content/` 与 `data/`，需使用 Docker 自托管。
-
-## 项目结构
-
-```
-personal-site/
-├─ app/
-│  ├─ [lang]/                    # zh / en 路由
-│  │  ├─ page.tsx                # 首页（Hero / 关于 / 经历 / 技能 / 项目 / 联系）
-│  │  ├─ blog/                   # 博客列表 / 文章页 / 标签聚合页
-│  │  └─ projects/[slug]/        # 项目详情页
-│  ├─ admin/                     # 后台管理页（SSR 只做 cookie 门禁）
-│  ├─ layout.tsx                 # 根布局（字体、主题、toast）
-│  ├─ globals.css                # 设计系统 + 3D 特效样式
-│  ├─ sitemap.ts / robots.ts     # SEO
-├─ components/
-│  ├─ sections/                  # 首页各区块
-│  ├─ admin/                     # 后台编辑器组件
-│  ├─ terminal.tsx               # 全局访客终端
-│  └─ ...                        # 粒子、3D、导航、页脚等特效组件
-├─ content/
-│  ├─ data/                      # 占位个人数据 + 读取逻辑
-│  └─ blog/                      # zh / en 示例文章
-├─ lib/                          # 博客解析、MDX 编译、i18n、邮件、读写工具
-├─ messages/                     # zh / en UI 文案
-├─ backend/                      # FastAPI：Agent、联系表单、阅读量、后台 API
-├─ public/                       # 静态资源
-├─ specs/                        # 功能规格与计划
-├─ Caddyfile                     # 同源入口：/api → FastAPI，其余 → Next
-├─ Dockerfile                    # Caddy + Next.js + FastAPI 单容器
-├─ start.sh                      # 容器内启动 Caddy + uvicorn + Next
-├─ docker-compose.yml            # 一键部署
-└─ LICENSE
-```
-
-## 技术栈
-
-| 层 | 选择 |
-|----|------|
-| 框架 | Next.js 16（App Router、RSC） |
-| UI | React 19、Tailwind CSS 4 |
-| 动画 | Framer Motion + 原生 CSS 3D |
-| 内容 | MDX（next-mdx-remote）+ gray-matter + Shiki |
-| 图标 | Lucide React + React Icons |
-| 评论 | giscus |
-| 后端 | Python 3.9+、FastAPI、uvicorn、json5 |
-| Agent | 站内检索 + 可选 OpenAI 兼容 LLM |
-| 邮件 | Python smtplib |
-| 部署 | Docker 单容器（Next.js standalone + uvicorn）+ GitHub Actions SSH 手动部署 |
-
-## 维护者
-
-[@shi-YangYang](https://github.com/shi-YangYang)
-
-## 贡献
-
-欢迎提交 issue 和 PR。改动前请先讨论你希望变更的内容。
-
-## 许可证
-
-[MIT](./LICENSE) © 2026
+[MIT](./LICENSE) © 2026 · Maintained by [@shi-YangYang](https://github.com/shi-YangYang)
