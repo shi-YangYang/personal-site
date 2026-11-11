@@ -41,7 +41,7 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var t=localStorage.getItem("theme");if(t==="light"||(!t&&window.matchMedia("(prefers-color-scheme: light)").matches)){document.documentElement.classList.add("light")}}catch(e){}`,
+            __html: `(function(){try{var t=localStorage.getItem("theme-manual");var light;if(t==="light"||t==="dark"){light=t==="light"}else{var h=new Date().getHours();light=h>=7&&h<18}if(light)document.documentElement.classList.add("light")}catch(e){document.documentElement.classList.add("light")}})()`,
           }}
         />
       </head>

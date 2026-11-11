@@ -1,7 +1,7 @@
 export const personalEn = {
   name: "Your Name",
   initials: "YN",
-  role: "Product Developer / Full-stack Engineer",
+  role: "Full-Stack Engineer",
   tagline: "Crafting Digital Experiences",
   bio: "Passionate about solving real problems with code. From frontend to backend, product to design, I love taking an idea from zero to one.",
   location: "Earth",
