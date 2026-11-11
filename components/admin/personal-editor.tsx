@@ -41,7 +41,11 @@ function createEmptyRecord(): PersonalDataRecord {
 
 type Panel = "basic" | "skills" | "experience" | "projects" | "links";
 
-export function PersonalEditor() {
+export function PersonalEditor({
+  postCounts,
+}: {
+  postCounts: Record<"zh" | "en", number>;
+}) {
   const [data, setData] = useState<Record<Locale, PersonalDataRecord>>({
     zh: createEmptyRecord(),
     en: createEmptyRecord(),
@@ -305,8 +309,14 @@ export function PersonalEditor() {
         </div>
       </div>
 
-      <aside className="min-w-0 xl:sticky xl:top-24 xl:h-fit">
-        <PersonalPreview record={record} locale={locale} dirty={dirty} panel={panel} />
+      <aside className="min-w-0">
+        <PersonalPreview
+          record={record}
+          locale={locale}
+          dirty={dirty}
+          panel={panel}
+          postCount={postCounts[locale]}
+        />
       </aside>
     </div>
   );

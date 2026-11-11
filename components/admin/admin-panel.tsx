@@ -12,7 +12,11 @@ import { apiUrl } from "@/lib/api";
 
 type Tab = "personal" | "mail";
 
-export function AdminPanel() {
+export function AdminPanel({
+  postCounts,
+}: {
+  postCounts: Record<"zh" | "en", number>;
+}) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("personal");
 
@@ -70,10 +74,10 @@ export function AdminPanel() {
       </nav>
 
       <div className="mt-8">
-        {tab === "personal" ? <PersonalEditor /> : <MailEditor />}
+        {tab === "personal" ? <PersonalEditor postCounts={postCounts} /> : <MailEditor />}
       </div>
 
-      <div className="fixed bottom-6 right-6 z-40 flex flex-col gap-2">
+      <div className="admin-scroll-buttons fixed bottom-6 right-6 z-40 flex flex-col gap-2">
         <button
           type="button"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
