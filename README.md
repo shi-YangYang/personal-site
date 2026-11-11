@@ -29,7 +29,7 @@ There is no database and no external CMS. Profile data, projects, posts, and run
 - **Bilingual by default** — Chinese and English share one content model. Sections are real routes such as `/zh/projects` and `/en/about`, not hash links.
 - **Agent grounded in the site** — Answers are retrieved from the profile, projects, experience, and posts, with citations. Open it with the `AGENT` control or `⌘J`; local retrieval works without a key, and an OpenAI-compatible LLM is optional.
 - **Terminal with real data** — Press `~` or `⌘K` to open a shell for navigation, view counts, theme, and language. It reads the same content as the rest of the site.
-- **Write in MDX, edit in the browser** — Posts support frontmatter, tags, reading time, code highlighting, and optional giscus comments. The `/admin` panel edits the profile, posts, and mail settings without a database.
+- **Write in MDX** — Posts support frontmatter, tags, reading time, code highlighting, and optional giscus comments. The `/admin` panel edits the profile and mail settings without a database; posts stay file-based.
 - **No database to operate** — `content/` and `data/` are the source of truth. Backups are plain files.
 - **One container, one port** — Caddy serves the public entry point, routes `/api/*` to FastAPI, and sends everything else to Next.js.
 

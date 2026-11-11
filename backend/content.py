@@ -21,7 +21,6 @@ from .config import (
     VIEWS_FILE,
 )
 
-SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 _views_lock = threading.Lock()
 
 
@@ -294,64 +293,6 @@ def parse_frontmatter(text: str) -> tuple[dict[str, Any], str]:
     else:
         meta["tags"] = []
     return meta, body
-
-
-def _serialize_post(post: dict[str, Any]) -> str:
-    tags = ", ".join(json.dumps(str(tag), ensure_ascii=False) for tag in post["tags"])
-    return "\n".join(
-        [
-            "---",
-            f"title: {json.dumps(post['title'], ensure_ascii=False)}",
-            f"description: {json.dumps(post['description'], ensure_ascii=False)}",
-            f"date: {json.dumps(post['date'], ensure_ascii=False)}",
-            f"tags: [{tags}]",
-            "---",
-            "",
-            str(post["content"]).strip(),
-            "",
-        ]
-    )
-
-
-def write_post(
-    slug: str,
-    title: str,
-    description: str,
-    date: str,
-    tags: list[str],
-    content: str,
-    languages: list[str],
-) -> dict[str, Any]:
-    slug = slug.strip().lower()
-    if not SLUG_RE.fullmatch(slug):
-        raise ValueError("Invalid slug: use lowercase letters, numbers and hyphens")
-    selected = [lang for lang in languages if lang in LOCALES]
-    if not selected:
-        raise ValueError("Pick at least one language")
-    if not title.strip() or not date.strip():
-        raise ValueError("slug, title and date are required")
-
-    written: list[str] = []
-    paths: list[str] = []
-    for locale in selected:
-        directory = BLOG_DIR / locale
-        directory.mkdir(parents=True, exist_ok=True)
-        path = directory / f"{slug}.mdx"
-        path.write_text(
-            _serialize_post(
-                {
-                    "title": title.strip(),
-                    "description": description.strip(),
-                    "date": date.strip(),
-                    "tags": [tag.strip() for tag in tags if tag.strip()],
-                    "content": content,
-                }
-            ),
-            "utf-8",
-        )
-        written.append(locale)
-        paths.append(f"/{locale}/blog/{slug}")
-    return {"written": written, "paths": paths}
 
 
 def list_posts(locale: str) -> list[dict[str, Any]]:

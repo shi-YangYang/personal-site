@@ -35,7 +35,6 @@ from .content import (
     read_personal,
     write_mail_config,
     write_personal,
-    write_post,
 )
 from .mail import send_contact_mail
 
@@ -247,34 +246,6 @@ def mail_post(body: MailBody, request: Request) -> dict[str, bool]:
         raise HTTPException(status_code=400, detail="启用时需填写 SMTP 服务器、邮箱和授权码")
     write_mail_config(config)
     return {"ok": True}
-
-
-class PostBody(BaseModel):
-    slug: str = ""
-    title: str = ""
-    description: str = ""
-    date: str = ""
-    tags: list[str] = Field(default_factory=list)
-    content: str = ""
-    languages: list[str] = Field(default_factory=list)
-
-
-@app.post("/api/admin/posts")
-def posts_post(body: PostBody, request: Request) -> dict[str, Any]:
-    require_admin(request)
-    try:
-        result = write_post(
-            slug=body.slug,
-            title=body.title,
-            description=body.description,
-            date=body.date,
-            tags=body.tags,
-            content=body.content,
-            languages=body.languages,
-        )
-    except ValueError as error:
-        raise HTTPException(status_code=400, detail=str(error)) from error
-    return {"ok": True, "slug": body.slug.strip().lower(), "languages": result["written"]}
 
 
 @app.get("/api/admin/session")
