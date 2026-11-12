@@ -3,19 +3,22 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { LogOut, FileText, UserRound, Mail, ArrowUp, ArrowDown } from "lucide-react";
+import { LogOut, UserRound, Mail, ArrowUp, ArrowDown } from "lucide-react";
 import { SectionLabel } from "@/components/section-label";
-import { PostEditor } from "./post-editor";
 import { PersonalEditor } from "./personal-editor";
 import { MailEditor } from "./mail-editor";
 import { cn } from "@/lib/utils";
 import { apiUrl } from "@/lib/api";
 
-type Tab = "posts" | "personal" | "mail";
+type Tab = "personal" | "mail";
 
-export function AdminPanel() {
+export function AdminPanel({
+  postCounts,
+}: {
+  postCounts: Record<"zh" | "en", number>;
+}) {
   const router = useRouter();
-  const [tab, setTab] = useState<Tab>("posts");
+  const [tab, setTab] = useState<Tab>("personal");
 
   async function handleLogout() {
     try {
@@ -29,7 +32,7 @@ export function AdminPanel() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-10">
+    <div className="mx-auto max-w-7xl px-6 py-10">
       <header className="flex items-start justify-between gap-4">
         <div>
           <SectionLabel>admin</SectionLabel>
@@ -57,12 +60,6 @@ export function AdminPanel() {
 
       <nav className="mt-6 flex gap-2 border-b border-brand-primary/10 pb-px">
         <TabButton
-          active={tab === "posts"}
-          onClick={() => setTab("posts")}
-          icon={<FileText size={14} />}
-          label="博客文章"
-        />
-        <TabButton
           active={tab === "personal"}
           onClick={() => setTab("personal")}
           icon={<UserRound size={14} />}
@@ -77,16 +74,10 @@ export function AdminPanel() {
       </nav>
 
       <div className="mt-8">
-        {tab === "posts" ? (
-          <PostEditor />
-        ) : tab === "personal" ? (
-          <PersonalEditor />
-        ) : (
-          <MailEditor />
-        )}
+        {tab === "personal" ? <PersonalEditor postCounts={postCounts} /> : <MailEditor />}
       </div>
 
-      <div className="fixed bottom-6 right-6 z-40 flex flex-col gap-2">
+      <div className="admin-scroll-buttons fixed bottom-6 right-6 z-40 flex flex-col gap-2">
         <button
           type="button"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}

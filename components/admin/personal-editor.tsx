@@ -5,6 +5,7 @@ import { Plus, Trash2, Save, ArrowUp, ArrowDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { apiUrl } from "@/lib/api";
 import { TagInput } from "./tag-input";
+import { PersonalPreview } from "./personal-preview";
 import type {
   PersonalDataRecord,
   SkillGroup,
@@ -38,28 +39,41 @@ function createEmptyRecord(): PersonalDataRecord {
   };
 }
 
-export function PersonalEditor() {
+type Panel = "basic" | "skills" | "experience" | "projects" | "links";
+
+export function PersonalEditor({
+  postCounts,
+}: {
+  postCounts: Record<"zh" | "en", number>;
+}) {
   const [data, setData] = useState<Record<Locale, PersonalDataRecord>>({
     zh: createEmptyRecord(),
     en: createEmptyRecord(),
   });
   const [locale, setLocale] = useState<Locale>("zh");
+  const [panel, setPanel] = useState<Panel>("basic");
+  const [savedSnapshot, setSavedSnapshot] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [status, setStatus] = useState<{ type: "idle" | "success" | "error"; text: string }>(
-    { type: "idle", text: "" },
-  );
+  const [status, setStatus] = useState<{
+    type: "idle" | "success" | "error";
+    text: string;
+  }>({ type: "idle", text: "" });
 
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(apiUrl("/api/admin/personal"), { credentials: "include" });
+        const res = await fetch(apiUrl("/api/admin/personal"), {
+          credentials: "include",
+        });
         if (!res.ok) throw new Error();
         const json = (await res.json()) as Record<Locale, PersonalDataRecord>;
-        setData((prev) => ({
-          zh: json.zh ?? prev.zh,
-          en: json.en ?? prev.en,
-        }));
+        const next = {
+          zh: json.zh ?? createEmptyRecord(),
+          en: json.en ?? createEmptyRecord(),
+        };
+        setData(next);
+        setSavedSnapshot(JSON.stringify(next));
       } catch {
         setStatus({ type: "error", text: "加载失败,请重新登录" });
       } finally {
@@ -69,6 +83,7 @@ export function PersonalEditor() {
   }, []);
 
   const record = data[locale];
+  const dirty = savedSnapshot !== "" && JSON.stringify(data) !== savedSnapshot;
 
   const update = useCallback(
     (patch: Partial<PersonalDataRecord>) => {
@@ -106,6 +121,7 @@ export function PersonalEditor() {
         setStatus({ type: "error", text: json?.error ?? "保存失败" });
         return;
       }
+      setSavedSnapshot(JSON.stringify(data));
       setStatus({ type: "success", text: "已保存,前台页面已更新" });
     } catch {
       setStatus({ type: "error", text: "网络错误,请重试" });
@@ -117,109 +133,191 @@ export function PersonalEditor() {
   if (loading) {
     return (
       <div className="animate-pulse space-y-4">
-        <div className="h-8 w-48 bg-bg-elevated rounded" />
-        <div className="h-64 w-full bg-bg-elevated rounded-2xl" />
+        <div className="h-8 w-48 rounded bg-bg-elevated" />
+        <div className="h-64 w-full rounded-2xl bg-bg-elevated" />
       </div>
     );
   }
 
+  const tabs: { id: Panel; label: string; count?: number }[] = [
+    { id: "basic", label: "基本信息" },
+    { id: "skills", label: "技能", count: record.skills.length },
+    { id: "experience", label: "经历", count: record.experience.length },
+    { id: "projects", label: "项目", count: record.projects.length },
+    { id: "links", label: "友链", count: record.friendLinks.length },
+  ];
+
   return (
-    <div className="space-y-5">
-      <section className="glass rounded-2xl p-6 space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-sm font-mono uppercase tracking-wider text-text-brand">
-            基本信息
-          </h2>
-          <div className="flex gap-1.5">
-            {(Object.keys(localeNames) as Locale[]).map((lang) => (
+    <div
+      key={locale}
+      lang={locale}
+      data-locale={locale}
+      className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]"
+    >
+      <div className="min-w-0 space-y-4">
+        <div className="glass rounded-2xl p-4 space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-sm font-mono uppercase tracking-wider text-text-brand">
+                个人信息
+              </h2>
+              <p className="mt-1 text-xs text-text-muted">
+                切换分区编辑，右侧实时预览。
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-text-muted">
+                内容语言
+              </span>
+              <div className="flex gap-1.5">
+                {(Object.keys(localeNames) as Locale[]).map((lang) => (
+                <button
+                  key={lang}
+                  type="button"
+                  onClick={() => setLocale(lang)}
+                  className={cn(
+                    "rounded-lg border px-3 py-1.5 text-xs transition-colors",
+                    locale === lang
+                      ? "border-brand-primary/50 bg-brand-primary/20 text-text-brand"
+                      : "border-brand-primary/20 text-text-muted hover:text-text-secondary",
+                  )}
+                >
+                  {localeNames[lang]}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <span className="sr-only" aria-live="polite">
+              {locale === "zh" ? "正在编辑中文内容" : "Editing English content"}
+            </span>
+          </div>
+
+          <nav className="flex flex-wrap gap-1">
+            {tabs.map((tab) => (
               <button
-                key={lang}
+                key={tab.id}
                 type="button"
-                onClick={() => setLocale(lang)}
+                onClick={() => setPanel(tab.id)}
+                aria-pressed={panel === tab.id}
                 className={cn(
-                  "rounded-lg px-3 py-1.5 text-xs border transition-colors",
-                  locale === lang
-                    ? "bg-brand-primary/20 border-brand-primary/50 text-text-brand"
-                    : "border-brand-primary/20 text-text-muted hover:text-text-secondary",
+                  "inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs transition-colors",
+                  panel === tab.id
+                    ? "bg-brand-primary/15 text-text-brand"
+                    : "text-text-muted hover:bg-brand-primary/5 hover:text-text-secondary",
                 )}
               >
-                {localeNames[lang]}
+                {tab.label}
+                {typeof tab.count === "number" && (
+                  <span className="text-[10px] opacity-60">{tab.count}</span>
+                )}
               </button>
             ))}
-          </div>
+          </nav>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Field label="姓名 *" value={record.name} onChange={(v) => update({ name: v })} />
-          <Field label="首字母" value={record.initials} onChange={(v) => update({ initials: v })} />
-          <Field label="职位" value={record.role} onChange={(v) => update({ role: v })} />
-          <Field label="标语" value={record.tagline} onChange={(v) => update({ tagline: v })} />
-          <Field label="所在地" value={record.location} onChange={(v) => update({ location: v })} />
-          <Field label="邮箱" value={record.email} onChange={(v) => update({ email: v })} />
-          <Field label="站点标题(浏览器标签页)" value={record.siteTitle} onChange={(v) => update({ siteTitle: v })} placeholder="留空则用姓名" />
-        </div>
+        {panel === "basic" && (
+          <section className="glass rounded-2xl p-6 space-y-4">
+            <h2 className="text-sm font-mono uppercase tracking-wider text-text-brand">
+              基本信息
+            </h2>
 
-        <div className="space-y-1">
-          <span className={labelCls}>简介</span>
-          <textarea
-            value={record.bio}
-            onChange={(e) => update({ bio: e.target.value })}
-            rows={3}
-            className={cn(inputCls, "resize-y")}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Field label="姓名 *" value={record.name} onChange={(v) => update({ name: v })} />
+              <Field label="首字母" value={record.initials} onChange={(v) => update({ initials: v })} />
+              <Field label="职位" value={record.role} onChange={(v) => update({ role: v })} />
+              <Field label="标语" value={record.tagline} onChange={(v) => update({ tagline: v })} />
+              <Field label="所在地" value={record.location} onChange={(v) => update({ location: v })} />
+              <Field label="邮箱" value={record.email} onChange={(v) => update({ email: v })} />
+              <Field
+                label="站点标题"
+                value={record.siteTitle}
+                onChange={(v) => update({ siteTitle: v })}
+                placeholder="留空则用姓名"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <span className={labelCls}>简介</span>
+              <textarea
+                value={record.bio}
+                onChange={(e) => update({ bio: e.target.value })}
+                rows={3}
+                className={cn(inputCls, "resize-y")}
+              />
+            </div>
+
+            <div>
+              <span className={labelCls}>社交链接</span>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <Field label="GitHub" value={record.socials.github} onChange={(v) => updateSocial({ github: v })} />
+                <Field label="CSDN" value={record.socials.csdn} onChange={(v) => updateSocial({ csdn: v })} />
+                <Field label="QQ" value={record.socials.qq} onChange={(v) => updateSocial({ qq: v })} />
+                <Field label="X" value={record.socials.x} onChange={(v) => updateSocial({ x: v })} />
+              </div>
+            </div>
+          </section>
+        )}
+
+        {panel === "skills" && (
+          <SkillsEditor
+            skills={record.skills}
+            onChange={(skills) => updateList("skills", skills)}
           />
-        </div>
+        )}
 
-        <div>
-          <span className={labelCls}>社交链接</span>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label="GitHub" value={record.socials.github} onChange={(v) => updateSocial({ github: v })} />
-            <Field label="CSDN" value={record.socials.csdn} onChange={(v) => updateSocial({ csdn: v })} />
-            <Field label="QQ" value={record.socials.qq} onChange={(v) => updateSocial({ qq: v })} />
-            <Field label="X" value={record.socials.x} onChange={(v) => updateSocial({ x: v })} />
-          </div>
-        </div>
-      </section>
+        {panel === "experience" && (
+          <ExperienceEditor
+            experience={record.experience}
+            onChange={(experience) => updateList("experience", experience)}
+          />
+        )}
 
-      <SkillsEditor
-        skills={record.skills}
-        onChange={(skills) => updateList("skills", skills)}
-      />
+        {panel === "projects" && (
+          <ProjectsEditor
+            projects={record.projects}
+            onChange={(projects) => updateList("projects", projects)}
+          />
+        )}
 
-      <ExperienceEditor
-        experience={record.experience}
-        onChange={(experience) => updateList("experience", experience)}
-      />
+        {panel === "links" && (
+          <FriendLinksEditor
+            links={record.friendLinks}
+            onChange={(links) => updateList("friendLinks", links)}
+          />
+        )}
 
-      <ProjectsEditor
-        projects={record.projects}
-        onChange={(projects) => updateList("projects", projects)}
-      />
-
-      <FriendLinksEditor
-        links={record.friendLinks}
-        onChange={(links) => updateList("friendLinks", links)}
-      />
-
-      {status.text && (
-        <p
-          className={cn(
-            "text-sm",
-            status.type === "success" ? "text-emerald-400" : "text-red-400",
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={onSave}
+            disabled={saving || !dirty || !record.name.trim()}
+            className="inline-flex items-center gap-2 rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-bg-base transition-opacity hover:opacity-90 disabled:opacity-40"
+          >
+            <Save size={16} />
+            {saving ? "保存中..." : dirty ? "保存全部更改" : "已保存"}
+          </button>
+          {status.text && (
+            <p
+              className={cn(
+                "text-sm",
+                status.type === "success" ? "text-emerald-400" : "text-red-400",
+              )}
+            >
+              {status.text}
+            </p>
           )}
-        >
-          {status.text}
-        </p>
-      )}
+        </div>
+      </div>
 
-      <button
-        type="button"
-        onClick={onSave}
-        disabled={saving || !record.name.trim()}
-        className="inline-flex items-center gap-2 rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-bg-base hover:opacity-90 disabled:opacity-40 transition-opacity"
-      >
-        <Save size={16} />
-        {saving ? "保存中..." : "保存全部更改"}
-      </button>
+      <aside className="min-w-0">
+        <PersonalPreview
+          record={record}
+          locale={locale}
+          dirty={dirty}
+          panel={panel}
+          postCount={postCounts[locale]}
+        />
+      </aside>
     </div>
   );
 }

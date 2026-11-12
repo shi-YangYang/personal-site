@@ -2,6 +2,7 @@ import { hasValidSession, isAdminConfigured } from "@/lib/admin";
 import { AdminLogin } from "@/components/admin/admin-login";
 import { AdminPanel } from "@/components/admin/admin-panel";
 import { AdminShell } from "@/components/admin/admin-shell";
+import { getAllPosts } from "@/lib/blog";
 
 export const dynamic = "force-dynamic";
 
@@ -32,9 +33,14 @@ export default async function AdminPage() {
     );
   }
 
+  const postCounts = {
+    zh: getAllPosts("zh").length,
+    en: getAllPosts("en").length,
+  };
+
   return (
     <AdminShell>
-      <AdminPanel />
+      <AdminPanel postCounts={postCounts} />
     </AdminShell>
   );
 }

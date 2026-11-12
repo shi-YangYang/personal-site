@@ -495,3 +495,9 @@ body {
     animation: none;
   }
 }
+
+
+/* Hide the admin jump buttons while the iframe preview is full screen. */
+body:has([data-preview-expanded="true"]) .admin-scroll-buttons {
+  display: none;
+}
