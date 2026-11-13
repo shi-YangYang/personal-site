@@ -293,7 +293,7 @@ export function AgentConsole() {
               event.preventDefault();
               send(input);
             }}
-            className="flex items-center gap-2 border-t border-brand-primary/15 px-3 py-2.5"
+            className="flex items-center gap-2 border-t border-brand-primary/15 px-3 py-2.5 transition-colors focus-within:bg-brand-primary/[0.03] focus-within:ring-1 focus-within:ring-inset focus-within:ring-brand-primary/25"
           >
             <span className="shrink-0 font-mono text-xs text-brand-glow">$</span>
             <label htmlFor="agent-input" className="sr-only">
@@ -307,7 +307,7 @@ export function AgentConsole() {
               onChange={(event) => setInput(event.target.value)}
               placeholder={t.placeholder}
               autoComplete="off"
-              className="min-w-0 flex-1 border-0 bg-transparent font-mono text-base shadow-none sm:text-xs"
+              className="bare-input min-w-0 flex-1 border-0 bg-transparent font-mono text-base shadow-none sm:text-xs"
             />
             <Button
               type="submit"

@@ -151,7 +151,7 @@ export function HeroConsole({
                 }}
                 className="px-3 pb-3"
               >
-                <div className="flex items-center gap-2 rounded-lg bg-bg-base px-3 py-2 shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-shadow focus-within:ring-1 focus-within:ring-brand-primary/30">
+                <div className="hero-agent-field flex items-center gap-2 rounded-lg border border-transparent bg-bg-base px-3 py-2 shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-[border-color,box-shadow] focus-within:border-brand-primary/40">
                   <span className="font-mono text-xs text-brand-glow">$</span>
                   <label htmlFor="hero-agent-question" className="sr-only">
                     {t.prompt}
@@ -162,7 +162,7 @@ export function HeroConsole({
                     onChange={(event) => setQuestion(event.target.value)}
                     placeholder={t.prompt}
                     autoComplete="off"
-                    className="min-w-0 flex-1 border-0 bg-transparent font-mono text-base shadow-none sm:text-[11px]"
+                    className="bare-input min-w-0 flex-1 border-0 bg-transparent font-mono text-base shadow-none sm:text-[11px]"
                   />
                   <Button
                     type="submit"

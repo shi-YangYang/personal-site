@@ -595,3 +595,22 @@ body:has([data-preview-expanded="true"]) .admin-scroll-buttons {
     min-height: 44px;
   }
 }
+
+/* Inline terminal/agent inputs: the wrapper owns the focus treatment. */
+.bare-input,
+.bare-input:hover,
+.bare-input:focus,
+.bare-input:focus-visible,
+.bare-input[data-focused="true"],
+.bare-input[data-focus-visible="true"] {
+  border-color: transparent;
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+  --tw-ring-shadow: 0 0 #0000;
+}
+
+/* The global border reset has higher priority than utility borders. */
+.hero-agent-field:focus-within {
+  border-color: color-mix(in oklab, var(--brand-primary) 55%, transparent) !important;
+}
