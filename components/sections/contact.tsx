@@ -68,13 +68,17 @@ export function ContactSection({ email }: { email: string }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Field
                 label={t("contact.name")}
+                name="name"
+                autoComplete="name"
                 value={form.name}
                 onChange={(v) => setForm((f) => ({ ...f, name: v }))}
                 required
               />
               <Field
                 label={t("contact.email")}
+                name="email"
                 type="email"
+                autoComplete="email"
                 value={form.email}
                 onChange={(v) => setForm((f) => ({ ...f, email: v }))}
                 required
@@ -82,6 +86,7 @@ export function ContactSection({ email }: { email: string }) {
             </div>
             <Field
               label={t("contact.message")}
+              name="message"
               value={form.message}
               onChange={(v) => setForm((f) => ({ ...f, message: v }))}
               required
@@ -92,7 +97,7 @@ export function ContactSection({ email }: { email: string }) {
                 type="submit"
                 variant="primary"
                 isDisabled={status === "sending"}
-                className="group"
+                className="group min-h-11"
               >
                 {status === "sending" ? t("contact.sending") : t("contact.send")}
                 <Send
@@ -115,6 +120,8 @@ function Field({
   value,
   onChange,
   type = "text",
+  name,
+  autoComplete,
   required,
   multiline,
 }: {
@@ -122,6 +129,8 @@ function Field({
   value: string;
   onChange: (v: string) => void;
   type?: string;
+  name?: string;
+  autoComplete?: string;
   required?: boolean;
   multiline?: boolean;
 }) {
@@ -134,6 +143,7 @@ function Field({
         <TextArea
           fullWidth
           aria-label={label}
+          name={name}
           required={required}
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -144,6 +154,8 @@ function Field({
         <Input
           fullWidth
           aria-label={label}
+          name={name}
+          autoComplete={autoComplete}
           required={required}
           type={type}
           value={value}

@@ -101,7 +101,7 @@ export function Navbar() {
               onPress={() => setDirOpen((v) => !v)}
               aria-haspopup="menu"
               aria-expanded={dirOpen}
-              className="flex min-h-0 items-center bg-transparent px-0 font-mono text-sm group"
+              className="flex min-h-11 items-center bg-transparent px-0 font-mono text-sm group sm:min-h-0"
             >
               <TerminalSquare size={16} className="mr-2 shrink-0 text-brand-glow" />
               <span className="flex min-w-0 items-center sm:w-[200px] md:w-[220px]">

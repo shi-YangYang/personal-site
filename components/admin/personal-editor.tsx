@@ -172,7 +172,7 @@ export function PersonalEditor({
                     size="sm"
                     onPress={() => setLocale(lang)}
                     className={cn(
-                      "min-h-0 rounded-lg border px-3 py-1.5 text-xs",
+                      "min-h-11 rounded-lg border px-3 py-1.5 text-xs sm:min-h-0",
                       locale === lang
                         ? "border-brand-primary/50 bg-brand-primary/20 text-text-brand"
                         : "border-brand-primary/20 text-text-muted hover:text-text-secondary",
@@ -197,7 +197,7 @@ export function PersonalEditor({
                 onPress={() => setPanel(tab.id)}
                 aria-pressed={panel === tab.id}
                 className={cn(
-                  "min-h-0 gap-1.5 rounded-lg px-2.5 py-1.5 text-xs",
+                  "min-h-11 gap-1.5 rounded-lg px-2.5 py-1.5 text-xs sm:min-h-0",
                   panel === tab.id
                     ? "bg-brand-primary/15 text-text-brand"
                     : "text-text-muted hover:bg-brand-primary/5 hover:text-text-secondary",
@@ -237,6 +237,7 @@ export function PersonalEditor({
               <Label className={labelCls}>简介</Label>
               <TextArea
                 fullWidth
+                aria-label="简介"
                 value={record.bio}
                 onChange={(e) => update({ bio: e.target.value })}
                 rows={3}
@@ -287,6 +288,7 @@ export function PersonalEditor({
         <div className="flex flex-wrap items-center gap-3">
           <Button
             variant="primary"
+            className="min-h-11 sm:min-h-0"
             onPress={onSave}
             isDisabled={saving || !dirty || !record.name.trim()}
           >
@@ -295,6 +297,8 @@ export function PersonalEditor({
           </Button>
           {status.text && (
             <p
+              role="status"
+              aria-live="polite"
               className={cn(
                 "text-sm",
                 status.type === "success" ? "text-emerald-400" : "text-red-400",
@@ -588,6 +592,7 @@ function ExperienceEditor({
               <Label className={labelCls}>描述</Label>
               <TextArea
                 fullWidth
+                aria-label={`${exp.company || "工作经历"} 描述`}
                 value={exp.description}
                 onChange={(e) => setItem(i, { description: e.target.value })}
                 rows={2}
@@ -684,6 +689,7 @@ function ProjectsEditor({
               <Label className={labelCls}>简介</Label>
               <TextArea
                 fullWidth
+                aria-label={`${project.title || "项目"} 简介`}
                 value={project.description}
                 onChange={(e) => setItem(i, { description: e.target.value })}
                 rows={2}
@@ -695,6 +701,7 @@ function ProjectsEditor({
               <Label className={labelCls}>详情描述(详情页)</Label>
               <TextArea
                 fullWidth
+                aria-label={`${project.title || "项目"} 详情描述`}
                 value={project.longDescription ?? ""}
                 onChange={(e) => setItem(i, { longDescription: e.target.value })}
                 rows={2}
@@ -770,6 +777,7 @@ function FriendLinksEditor({
               <Label className={labelCls}>描述</Label>
               <TextArea
                 fullWidth
+                aria-label={`${link.name || "友链"} 描述`}
                 value={link.description}
                 onChange={(e) => setItem(i, { description: e.target.value })}
                 rows={2}

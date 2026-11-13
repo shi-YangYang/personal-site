@@ -134,7 +134,7 @@ export function Footer({ socials }: { socials: {
             variant="ghost"
             size="sm"
             onPress={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="min-h-0 gap-1.5 px-0 text-xs text-text-muted hover:text-text-brand"
+            className="min-h-11 gap-1.5 px-0 text-xs text-text-muted hover:text-text-brand sm:min-h-0"
           >
             <ArrowUp size={12} />
             {t("footer.top")}

@@ -169,7 +169,7 @@ export function AgentConsole() {
         onPress={() => agentStore.toggle()}
         aria-expanded={state.open}
         aria-label={state.open ? t.close : t.button}
-        className="fixed bottom-5 left-5 z-[70] hidden items-center gap-2 rounded-full border border-brand-primary/30 bg-bg-elevated/90 px-4 py-2.5 font-mono text-[10px] tracking-[0.12em] text-text-brand shadow-[0_0_30px_rgba(16,185,129,0.18)] backdrop-blur-xl hover:border-brand-primary/60 hover:glow md:inline-flex sm:bottom-6 sm:left-6"
+        className="fixed bottom-3 left-4 z-[70] hidden items-center gap-2 rounded-full border border-brand-primary/30 bg-bg-elevated/90 px-4 py-2.5 font-mono text-[10px] tracking-[0.12em] text-text-brand shadow-[0_0_30px_rgba(16,185,129,0.18)] backdrop-blur-xl hover:border-brand-primary/60 hover:glow md:inline-flex sm:bottom-4 sm:left-5"
       >
         <span className="relative flex size-2">
           <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand-glow opacity-60" />
@@ -215,7 +215,7 @@ export function AgentConsole() {
                 size="sm"
                 onPress={() => agentStore.close()}
                 aria-label={t.close}
-                className="min-h-0 size-7 text-text-muted hover:text-text-brand"
+                className="size-11 min-h-0 text-text-muted hover:text-text-brand sm:size-7"
               >
                 <X size={15} />
               </Button>
@@ -281,7 +281,7 @@ export function AgentConsole() {
                 variant="ghost"
                 size="sm"
                 onPress={() => send(suggestion)}
-                className="min-h-0 rounded-full border border-brand-primary/20 px-2.5 py-1 font-mono text-[9px] text-text-secondary hover:border-brand-primary/50 hover:text-text-brand"
+                className="min-h-11 rounded-full border border-brand-primary/20 px-2.5 py-1 font-mono text-[10px] text-text-secondary hover:border-brand-primary/50 hover:text-text-brand sm:min-h-0 sm:text-[9px]"
               >
                 {suggestion}
               </Button>
@@ -293,7 +293,7 @@ export function AgentConsole() {
               event.preventDefault();
               send(input);
             }}
-            className="flex items-center gap-2 border-t border-brand-primary/15 px-3 py-2.5"
+            className="flex items-center gap-2 border-t border-brand-primary/15 px-3 py-2.5 transition-colors focus-within:bg-brand-primary/[0.03] focus-within:ring-1 focus-within:ring-inset focus-within:ring-brand-primary/25"
           >
             <span className="shrink-0 font-mono text-xs text-brand-glow">$</span>
             <label htmlFor="agent-input" className="sr-only">
@@ -302,11 +302,12 @@ export function AgentConsole() {
             <Input
               ref={inputRef}
               id="agent-input"
+              name="question"
               value={input}
               onChange={(event) => setInput(event.target.value)}
               placeholder={t.placeholder}
               autoComplete="off"
-              className="min-w-0 flex-1 border-0 bg-transparent font-mono text-xs shadow-none"
+              className="bare-input min-w-0 flex-1 border-0 bg-transparent font-mono text-base shadow-none sm:text-xs"
             />
             <Button
               type="submit"
@@ -315,7 +316,7 @@ export function AgentConsole() {
               size="sm"
               isDisabled={loading || !input.trim()}
               aria-label={t.send}
-              className="min-h-0 size-7 text-text-brand"
+              className="size-11 min-h-0 text-text-brand sm:size-7"
             >
               <Send size={14} />
             </Button>
