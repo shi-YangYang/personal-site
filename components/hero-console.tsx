@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Button, Input } from "@heroui/react";
 import { ArrowDown, ArrowRight, Bot, CloudRain } from "lucide-react";
 import type { PersonalData } from "@/content/data";
 import type { Messages } from "@/lib/messages";
@@ -154,28 +155,31 @@ export function HeroConsole({
                   <label htmlFor="hero-agent-question" className="sr-only">
                     {t.prompt}
                   </label>
-                  <input
+                  <Input
                     id="hero-agent-question"
                     value={question}
                     onChange={(event) => setQuestion(event.target.value)}
                     placeholder={t.prompt}
                     autoComplete="off"
-                    className="min-w-0 flex-1 bg-transparent font-mono text-[11px] text-text-primary outline-none placeholder:text-text-muted"
+                    className="min-w-0 flex-1 border-0 bg-transparent font-mono text-[11px] shadow-none"
                   />
-                  <button
+                  <Button
                     type="submit"
-                    className="rounded-md p-1 text-text-brand transition-colors hover:bg-brand-primary/10"
+                    isIconOnly
+                    variant="ghost"
+                    size="sm"
                     aria-label={t.send}
+                    className="min-h-0 size-7 text-text-brand"
                   >
                     <ArrowRight size={13} />
-                  </button>
+                  </Button>
                 </div>
               </form>
             </div>
           </FadeIn>
         </div>
 
-        <div className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 text-text-muted animate-bounce">
+        <div className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 text-text-muted">
           <ArrowDown size={18} />
         </div>
       </section>
@@ -199,15 +203,16 @@ export function HeroConsole({
           </span>
           {t.metrics.skills}
         </span>
-        <button
-          type="button"
-          onClick={() => fxStore.toggle()}
+        <Button
+          variant="ghost"
+          size="sm"
+          onPress={() => fxStore.toggle()}
           aria-pressed={rain}
-          className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-brand-primary/20 px-2.5 py-1 text-text-muted transition-colors hover:border-brand-primary/50 hover:text-text-brand"
+          className="ml-auto min-h-0 gap-1.5 rounded-full border border-brand-primary/20 px-2.5 py-1 text-[10px] text-text-muted hover:border-brand-primary/50 hover:text-text-brand"
         >
           <CloudRain size={12} />
           {t.rain} {rain ? t.rainOn : t.rainOff}
-        </button>
+        </Button>
       </div>
     </>
   );

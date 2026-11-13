@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Button } from "@heroui/react";
 import { usePathname } from "next/navigation";
 import { useT, useI18n } from "./i18n-provider";
 import { Code3D } from "./code-3d";
@@ -129,14 +130,15 @@ export function Footer({ socials }: { socials: {
           <span>
             © {year} · {t("footer.built_with")} · {t("footer.rights")}
           </span>
-          <button
-            type="button"
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="inline-flex items-center gap-1.5 text-text-muted hover:text-text-brand transition-colors"
+          <Button
+            variant="ghost"
+            size="sm"
+            onPress={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="min-h-0 gap-1.5 px-0 text-xs text-text-muted hover:text-text-brand"
           >
             <ArrowUp size={12} />
             {t("footer.top")}
-          </button>
+          </Button>
         </div>
       </div>
     </footer>

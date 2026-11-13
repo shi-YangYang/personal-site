@@ -13,6 +13,7 @@
   <a href="https://nextjs.org"><img src="https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js 16" /></a>
   <a href="https://www.typescriptlang.org"><img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript 5" /></a>
   <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind CSS 4" /></a>
+  <a href="https://heroui.com"><img src="https://img.shields.io/badge/HeroUI-3-10b981?style=flat-square" alt="HeroUI 3" /></a>
   <a href="https://fastapi.tiangolo.com"><img src="https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI" /></a>
   <a href="https://www.docker.com"><img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker" /></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-10b981?style=flat-square" alt="MIT License" /></a>
@@ -27,9 +28,9 @@ There is no database and no external CMS. Profile data, projects, posts, and run
 ## Features
 
 - **Bilingual by default** — Chinese and English share one content model. Sections are real routes such as `/zh/projects` and `/en/about`, not hash links.
-- **Agent grounded in the site** — Answers are retrieved from the profile, projects, experience, and posts, with citations. Open it with the `AGENT` control or `⌘J`; local retrieval works without a key, and an OpenAI-compatible LLM is optional.
+- **LangGraph agent grounded in the site** — A read-only tool graph answers from the profile, projects, experience, and posts with citations. Open it with the `AGENT` control or `⌘J`; local retrieval works without a key, and an OpenAI-compatible LLM is optional. The public endpoint is rate-limited per IP and globally, with server-side keys only. Configure or test the model in `/admin` → 模型配置.
 - **Terminal with real data** — Press `~` or `⌘K` to open a shell for navigation, view counts, theme, and language. It reads the same content as the rest of the site.
-- **Write in MDX** — Posts support frontmatter, tags, reading time, code highlighting, and optional giscus comments. The `/admin` panel edits the profile and mail settings without a database; posts stay file-based.
+- **Write in MDX** — Posts support frontmatter, tags, reading time, code highlighting, and optional giscus comments. The `/admin` panel edits the profile, model, and mail settings without a database; posts stay file-based.
 - **No database to operate** — `content/` and `data/` are the source of truth. Backups are plain files.
 - **One container, one port** — Caddy serves the public entry point, routes `/api/*` to FastAPI, and sends everything else to Next.js.
 
@@ -89,8 +90,9 @@ Start from [`.env.example`](./.env.example). The most important variables:
 | `ADMIN_SESSION_SALT` | Shared session salt; must match between Next.js and FastAPI. |
 | `COOKIE_SECURE` | Set to `true` when serving over HTTPS. |
 | `NEXT_PUBLIC_SITE_URL` | Canonical URL used for metadata and the sitemap. |
-| `AGENT_LLM_BASE_URL`, `AGENT_LLM_API_KEY`, `AGENT_MODEL` | Optional OpenAI-compatible model for the agent. Without them, local retrieval is used. |
+| `AGENT_LLM_BASE_URL`, `AGENT_LLM_API_KEY`, `AGENT_MODEL` | Optional defaults for an OpenAI-compatible model. Can also be saved at runtime from `/admin` → 模型配置. Without a model, local retrieval is used. |
 | `SMTP_*` | Optional contact-form email notifications. |
+| `AGENT_RATE_PER_MIN`, `AGENT_RATE_PER_DAY`, `AGENT_GLOBAL_PER_DAY` | Agent abuse limits. Defaults are intentionally conservative; see `.env.example`. |
 
 ## Privacy
 

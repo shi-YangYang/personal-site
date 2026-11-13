@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Button, Input, Label, ListBox, Select, Switch } from "@heroui/react";
 import { Save } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { apiUrl } from "@/lib/api";
-
-const inputCls =
-  "w-full rounded-lg border border-brand-primary/20 bg-bg-elevated px-3 py-2 text-sm outline-none focus:border-brand-primary/60 transition-colors";
 
 const labelCls = "mb-1 block text-xs text-text-secondary";
 
@@ -100,15 +98,17 @@ export function MailEditor() {
           <h2 className="text-sm font-mono uppercase tracking-wider text-text-brand">
             邮件通知设置
           </h2>
-          <label className="inline-flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={form.enabled}
-              onChange={(e) => update({ enabled: e.target.checked })}
-              className="size-4 accent-emerald-500"
-            />
-            <span className="text-sm text-text-secondary">启用邮件通知</span>
-          </label>
+          <Switch
+            isSelected={form.enabled}
+            onChange={(selected) => update({ enabled: selected })}
+          >
+            <Switch.Content className="text-sm text-text-secondary">
+              <Switch.Control>
+                <Switch.Thumb />
+              </Switch.Control>
+              启用邮件通知
+            </Switch.Content>
+          </Switch>
         </div>
 
         <p className="text-xs text-text-muted leading-relaxed">
@@ -120,15 +120,23 @@ export function MailEditor() {
           <div className="grid grid-cols-2 gap-2">
             <Field label="端口" value={String(form.port)} onChange={(v) => update({ port: Number(v) || 465 })} placeholder="465" />
             <div>
-              <span className={labelCls}>加密方式</span>
-              <select
-                value={form.secure ? "ssl" : "none"}
-                onChange={(e) => update({ secure: e.target.value === "ssl" })}
-                className={inputCls}
+              <Label className={labelCls}>加密方式</Label>
+              <Select
+                selectedKey={form.secure ? "ssl" : "none"}
+                onSelectionChange={(key) => update({ secure: key === "ssl" })}
+                aria-label="加密方式"
               >
-                <option value="ssl">SSL(465)</option>
-                <option value="none">无加密(25)</option>
-              </select>
+                <Select.Trigger>
+                  <Select.Value />
+                  <Select.Indicator />
+                </Select.Trigger>
+                <Select.Popover>
+                  <ListBox>
+                    <ListBox.Item id="ssl">SSL(465)</ListBox.Item>
+                    <ListBox.Item id="none">无加密(25)</ListBox.Item>
+                  </ListBox>
+                </Select.Popover>
+              </Select>
             </div>
           </div>
           <Field label="发件邮箱" value={form.user} onChange={(v) => update({ user: v })} placeholder="your@qq.com" />
@@ -155,15 +163,10 @@ export function MailEditor() {
         </p>
       )}
 
-      <button
-        type="button"
-        onClick={onSave}
-        disabled={saving}
-        className="inline-flex items-center gap-2 rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-bg-base hover:opacity-90 disabled:opacity-40 transition-opacity"
-      >
+      <Button variant="primary" onPress={onSave} isDisabled={saving}>
         <Save size={16} />
         {saving ? "保存中..." : "保存设置"}
-      </button>
+      </Button>
     </div>
   );
 }
@@ -182,15 +185,16 @@ function Field({
   type?: string;
 }) {
   return (
-    <label className="block">
-      <span className={labelCls}>{label}</span>
-      <input
+    <div className="block space-y-1">
+      <Label className={labelCls}>{label}</Label>
+      <Input
+        fullWidth
+        aria-label={label}
         type={type}
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
-        className={inputCls}
       />
-    </label>
+    </div>
   );
 }

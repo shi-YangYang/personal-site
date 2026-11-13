@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { Button, Input, Label, ListBox, Select, TextArea } from "@heroui/react";
 import { Plus, Trash2, Save, ArrowUp, ArrowDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { apiUrl } from "@/lib/api";
@@ -15,9 +16,6 @@ import type {
   SkillItem,
 } from "@/lib/personal";
 import { localeNames, type Locale } from "@/lib/i18n";
-
-const inputCls =
-  "w-full rounded-lg border border-brand-primary/20 bg-bg-elevated px-3 py-2 text-sm outline-none focus:border-brand-primary/60 transition-colors";
 
 const labelCls = "mb-1 block text-xs text-text-secondary";
 
@@ -161,9 +159,6 @@ export function PersonalEditor({
               <h2 className="text-sm font-mono uppercase tracking-wider text-text-brand">
                 个人信息
               </h2>
-              <p className="mt-1 text-xs text-text-muted">
-                切换分区编辑，右侧实时预览。
-              </p>
             </div>
             <div className="flex items-center gap-2">
               <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-text-muted">
@@ -171,19 +166,20 @@ export function PersonalEditor({
               </span>
               <div className="flex gap-1.5">
                 {(Object.keys(localeNames) as Locale[]).map((lang) => (
-                <button
-                  key={lang}
-                  type="button"
-                  onClick={() => setLocale(lang)}
-                  className={cn(
-                    "rounded-lg border px-3 py-1.5 text-xs transition-colors",
-                    locale === lang
-                      ? "border-brand-primary/50 bg-brand-primary/20 text-text-brand"
-                      : "border-brand-primary/20 text-text-muted hover:text-text-secondary",
-                  )}
-                >
-                  {localeNames[lang]}
-                  </button>
+                  <Button
+                    key={lang}
+                    variant="ghost"
+                    size="sm"
+                    onPress={() => setLocale(lang)}
+                    className={cn(
+                      "min-h-0 rounded-lg border px-3 py-1.5 text-xs",
+                      locale === lang
+                        ? "border-brand-primary/50 bg-brand-primary/20 text-text-brand"
+                        : "border-brand-primary/20 text-text-muted hover:text-text-secondary",
+                    )}
+                  >
+                    {localeNames[lang]}
+                  </Button>
                 ))}
               </div>
             </div>
@@ -194,13 +190,14 @@ export function PersonalEditor({
 
           <nav className="flex flex-wrap gap-1">
             {tabs.map((tab) => (
-              <button
+              <Button
                 key={tab.id}
-                type="button"
-                onClick={() => setPanel(tab.id)}
+                variant="ghost"
+                size="sm"
+                onPress={() => setPanel(tab.id)}
                 aria-pressed={panel === tab.id}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs transition-colors",
+                  "min-h-0 gap-1.5 rounded-lg px-2.5 py-1.5 text-xs",
                   panel === tab.id
                     ? "bg-brand-primary/15 text-text-brand"
                     : "text-text-muted hover:bg-brand-primary/5 hover:text-text-secondary",
@@ -210,7 +207,7 @@ export function PersonalEditor({
                 {typeof tab.count === "number" && (
                   <span className="text-[10px] opacity-60">{tab.count}</span>
                 )}
-              </button>
+              </Button>
             ))}
           </nav>
         </div>
@@ -237,12 +234,13 @@ export function PersonalEditor({
             </div>
 
             <div className="space-y-1">
-              <span className={labelCls}>简介</span>
-              <textarea
+              <Label className={labelCls}>简介</Label>
+              <TextArea
+                fullWidth
                 value={record.bio}
                 onChange={(e) => update({ bio: e.target.value })}
                 rows={3}
-                className={cn(inputCls, "resize-y")}
+                className="resize-y"
               />
             </div>
 
@@ -287,15 +285,14 @@ export function PersonalEditor({
         )}
 
         <div className="flex flex-wrap items-center gap-3">
-          <button
-            type="button"
-            onClick={onSave}
-            disabled={saving || !dirty || !record.name.trim()}
-            className="inline-flex items-center gap-2 rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-bg-base transition-opacity hover:opacity-90 disabled:opacity-40"
+          <Button
+            variant="primary"
+            onPress={onSave}
+            isDisabled={saving || !dirty || !record.name.trim()}
           >
             <Save size={16} />
             {saving ? "保存中..." : dirty ? "保存全部更改" : "已保存"}
-          </button>
+          </Button>
           {status.text && (
             <p
               className={cn(
@@ -334,10 +331,16 @@ function Field({
   placeholder?: string;
 }) {
   return (
-    <label className="block">
-      <span className={labelCls}>{label}</span>
-      <input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className={inputCls} />
-    </label>
+    <div className="block space-y-1">
+      <Label className={labelCls}>{label}</Label>
+      <Input
+        fullWidth
+        aria-label={label}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+      />
+    </div>
   );
 }
 
@@ -362,14 +365,10 @@ function SectionCard({
           )}
         </h2>
         {onAdd && (
-          <button
-            type="button"
-            onClick={onAdd}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-brand-primary/20 px-2.5 py-1.5 text-xs text-text-secondary hover:text-text-brand hover:border-brand-primary/40 transition-colors"
-          >
+          <Button variant="secondary" size="sm" onPress={onAdd}>
             <Plus size={14} />
             添加
-          </button>
+          </Button>
         )}
       </div>
       {children}
@@ -388,16 +387,30 @@ function MoveButtons({
   upDisabled?: boolean;
   downDisabled?: boolean;
 }) {
-  const base =
-    "p-1.5 rounded-lg text-text-muted hover:text-text-brand hover:bg-brand-primary/10 transition-colors disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-text-muted";
   return (
     <div className="flex flex-col gap-0.5">
-      <button type="button" onClick={onUp} disabled={upDisabled} className={base} aria-label="上移">
+      <Button
+        isIconOnly
+        variant="ghost"
+        size="sm"
+        onPress={onUp}
+        isDisabled={upDisabled}
+        className="size-7 min-h-0 text-text-muted hover:text-text-brand"
+        aria-label="上移"
+      >
         <ArrowUp size={14} />
-      </button>
-      <button type="button" onClick={onDown} disabled={downDisabled} className={base} aria-label="下移">
+      </Button>
+      <Button
+        isIconOnly
+        variant="ghost"
+        size="sm"
+        onPress={onDown}
+        isDisabled={downDisabled}
+        className="size-7 min-h-0 text-text-muted hover:text-text-brand"
+        aria-label="下移"
+      >
         <ArrowDown size={14} />
-      </button>
+      </Button>
     </div>
   );
 }
@@ -415,14 +428,16 @@ function ItemShell({
     <div className="relative rounded-xl border border-brand-primary/15 bg-bg-base/30 p-4 space-y-3">
       <div className="absolute right-3 top-3 flex items-center gap-1">
         {move}
-        <button
-          type="button"
-          onClick={onDelete}
-          className="p-1.5 rounded-lg text-text-muted hover:text-red-400 hover:bg-red-400/10 transition-colors"
+        <Button
+          isIconOnly
+          variant="ghost"
+          size="sm"
+          onPress={onDelete}
+          className="size-7 min-h-0 text-text-muted hover:text-red-400"
           aria-label="删除"
         >
           <Trash2 size={14} />
-        </button>
+        </Button>
       </div>
       {children}
     </div>
@@ -478,43 +493,46 @@ function SkillsEditor({
             <div className="space-y-2">
               {group.items.map((item, ii) => (
                 <div key={ii} className="flex items-center gap-2">
-                  <input
+                  <Input
                     value={item.name}
                     onChange={(e) => setItem(gi, ii, { name: e.target.value })}
                     placeholder="技能名"
-                    className={cn(inputCls, "flex-1")}
+                    className="flex-1"
                   />
-                  <input
+                  <Input
                     type="number"
                     min={0}
                     max={100}
-                    value={item.level}
+                    value={String(item.level)}
                     onChange={(e) => setItem(gi, ii, { level: Number(e.target.value) })}
                     placeholder="熟练度"
-                    className={cn(inputCls, "w-24")}
+                    className="w-24"
                   />
-                  <button
-                    type="button"
-                    onClick={() =>
+                  <Button
+                    isIconOnly
+                    variant="ghost"
+                    size="sm"
+                    onPress={() =>
                       setGroup(gi, { items: group.items.filter((_, j) => j !== ii) })
                     }
-                    className="p-1.5 rounded-lg text-text-muted hover:text-red-400 transition-colors"
+                    className="size-7 min-h-0 text-text-muted hover:text-red-400"
                     aria-label="删除技能"
                   >
                     <Trash2 size={14} />
-                  </button>
+                  </Button>
                 </div>
               ))}
-              <button
-                type="button"
-                onClick={() =>
+              <Button
+                variant="ghost"
+                size="sm"
+                onPress={() =>
                   setGroup(gi, { items: [...group.items, { name: "", level: 80 }] })
                 }
-                className="inline-flex items-center gap-1 text-xs text-text-brand hover:underline"
+                className="justify-start px-0 text-xs text-text-brand hover:underline"
               >
                 <Plus size={12} />
                 添加技能项
-              </button>
+              </Button>
             </div>
           </ItemShell>
         ))}
@@ -567,12 +585,13 @@ function ExperienceEditor({
               <Field label="地点" value={exp.location} onChange={(v) => setItem(i, { location: v })} />
             </div>
             <div className="space-y-1">
-              <span className={labelCls}>描述</span>
-              <textarea
+              <Label className={labelCls}>描述</Label>
+              <TextArea
+                fullWidth
                 value={exp.description}
                 onChange={(e) => setItem(i, { description: e.target.value })}
                 rows={2}
-                className={cn(inputCls, "resize-y")}
+                className="resize-y"
               />
             </div>
             <div className="space-y-1">
@@ -641,35 +660,45 @@ function ProjectsEditor({
               <Field label="标题" value={project.title} onChange={(v) => setItem(i, { title: v })} />
               <Field label="年份" value={project.year ?? ""} onChange={(v) => setItem(i, { year: v })} />
               <div>
-                <span className={labelCls}>卡片尺寸</span>
-                <select
-                  value={project.size}
-                  onChange={(e) => setItem(i, { size: e.target.value === "large" ? "large" : "small" })}
-                  className={inputCls}
+                <Label className={labelCls}>卡片尺寸</Label>
+                <Select
+                  selectedKey={project.size}
+                  onSelectionChange={(key) => setItem(i, { size: key === "large" ? "large" : "small" })}
+                  aria-label="卡片尺寸"
                 >
-                  <option value="small">小卡片</option>
-                  <option value="large">大卡片</option>
-                </select>
+                  <Select.Trigger>
+                    <Select.Value />
+                    <Select.Indicator />
+                  </Select.Trigger>
+                  <Select.Popover>
+                    <ListBox>
+                      <ListBox.Item id="small">小卡片</ListBox.Item>
+                      <ListBox.Item id="large">大卡片</ListBox.Item>
+                    </ListBox>
+                  </Select.Popover>
+                </Select>
               </div>
             </div>
 
             <div className="space-y-1">
-              <span className={labelCls}>简介</span>
-              <textarea
+              <Label className={labelCls}>简介</Label>
+              <TextArea
+                fullWidth
                 value={project.description}
                 onChange={(e) => setItem(i, { description: e.target.value })}
                 rows={2}
-                className={cn(inputCls, "resize-y")}
+                className="resize-y"
               />
             </div>
 
             <div className="space-y-1">
-              <span className={labelCls}>详情描述(详情页)</span>
-              <textarea
+              <Label className={labelCls}>详情描述(详情页)</Label>
+              <TextArea
+                fullWidth
                 value={project.longDescription ?? ""}
                 onChange={(e) => setItem(i, { longDescription: e.target.value })}
                 rows={2}
-                className={cn(inputCls, "resize-y")}
+                className="resize-y"
               />
             </div>
 
@@ -738,12 +767,13 @@ function FriendLinksEditor({
               <Field label="链接" value={link.url} onChange={(v) => setItem(i, { url: v })} />
             </div>
             <div className="space-y-1">
-              <span className={labelCls}>描述</span>
-              <textarea
+              <Label className={labelCls}>描述</Label>
+              <TextArea
+                fullWidth
                 value={link.description}
                 onChange={(e) => setItem(i, { description: e.target.value })}
                 rows={2}
-                className={cn(inputCls, "resize-y")}
+                className="resize-y"
               />
             </div>
           </ItemShell>

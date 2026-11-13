@@ -55,6 +55,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     // toggle it again until the stored/time theme has been read.
     if (!ready) return;
     document.documentElement.classList.toggle("light", theme === "light");
+    document.documentElement.dataset.theme = theme;
   }, [ready, theme]);
 
   // Without a manual choice, follow the clock across the 07:00 / 18:00

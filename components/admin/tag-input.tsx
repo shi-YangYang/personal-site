@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Button, Input } from "@heroui/react";
 import { Plus, X } from "lucide-react";
 
 export function TagInput({
@@ -32,7 +33,7 @@ export function TagInput({
   return (
     <div className="space-y-2">
       <div className="flex gap-2">
-        <input
+        <Input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => {
@@ -42,16 +43,17 @@ export function TagInput({
             }
           }}
           placeholder={placeholder ?? "输入后回车或点击添加"}
-          className="flex-1 rounded-lg border border-brand-primary/20 bg-bg-elevated px-3 py-2 text-sm outline-none focus:border-brand-primary/60 transition-colors"
+          className="flex-1"
         />
-        <button
-          type="button"
-          onClick={addTag}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-brand-primary/20 px-3 py-2 text-xs text-text-secondary hover:text-text-brand hover:border-brand-primary/40 transition-colors shrink-0"
+        <Button
+          variant="secondary"
+          size="sm"
+          onPress={addTag}
+          className="shrink-0"
         >
           <Plus size={14} />
           添加
-        </button>
+        </Button>
       </div>
 
       {tags.length > 0 && (
@@ -62,14 +64,16 @@ export function TagInput({
               className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border border-brand-primary/20 bg-brand-primary/5 text-text-brand/90"
             >
               #{tag}
-              <button
-                type="button"
-                onClick={() => removeTag(tag)}
-                className="text-text-muted hover:text-red-400 transition-colors"
+              <Button
+                isIconOnly
+                variant="ghost"
+                size="sm"
+                onPress={() => removeTag(tag)}
+                className="min-h-0 size-5 text-text-muted hover:text-red-400"
                 aria-label={`删除标签 ${tag}`}
               >
                 <X size={12} />
-              </button>
+              </Button>
             </span>
           ))}
         </div>

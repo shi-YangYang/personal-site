@@ -2,6 +2,7 @@
 
 import { apiUrl } from "@/lib/api";
 import { useState } from "react";
+import { Button, Input, TextArea } from "@heroui/react";
 import { useT } from "../i18n-provider";
 import { useToast } from "../toast";
 import { FadeIn } from "../fade-in";
@@ -87,17 +88,18 @@ export function ContactSection({ email }: { email: string }) {
               multiline
             />
             <div className="flex items-center justify-end gap-3">
-              <button
+              <Button
                 type="submit"
-                disabled={status === "sending"}
-                className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-brand-primary text-bg-base font-medium hover:glow disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                variant="primary"
+                isDisabled={status === "sending"}
+                className="group"
               >
                 {status === "sending" ? t("contact.sending") : t("contact.send")}
                 <Send
                   size={14}
-                  className="group-hover:translate-x-0.5 transition-transform"
+                  className="transition-transform group-hover:translate-x-0.5"
                 />
-              </button>
+              </Button>
             </div>
           </form>
           </SpotlightCard>
@@ -123,30 +125,31 @@ function Field({
   required?: boolean;
   multiline?: boolean;
 }) {
-  const base =
-    "w-full bg-bg-base/40 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand-primary/60 focus:ring-1 focus:ring-brand-primary/40 transition-colors";
   return (
-    <label className="block">
-      <span className="block text-xs font-mono uppercase tracking-wider text-text-muted mb-1.5">
+    <div className="block space-y-1.5">
+      <span className="block text-xs font-mono uppercase tracking-wider text-text-muted">
         {label}
       </span>
       {multiline ? (
-        <textarea
+        <TextArea
+          fullWidth
+          aria-label={label}
           required={required}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           rows={5}
-          className={`${base} resize-none`}
+          className="resize-none"
         />
       ) : (
-        <input
+        <Input
+          fullWidth
+          aria-label={label}
           required={required}
           type={type}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className={base}
         />
       )}
-    </label>
+    </div>
   );
 }

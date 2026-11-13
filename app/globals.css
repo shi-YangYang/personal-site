@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import "@heroui/styles";
 @plugin "@tailwindcss/typography";
 
 :root {
@@ -41,6 +41,40 @@
   --shadow-hover: 0 20px 60px -20px rgba(16, 185, 129, 0.3);
   --fx-loader-glow: 0 0 80px rgba(16, 185, 129, 0.15);
   --fx-grid-line: rgba(16, 185, 129, 0.32);
+
+  /* HeroUI tokens mapped onto the site's cyber-green theme. */
+  --background: var(--bg-base);
+  --foreground: var(--text-primary);
+  --surface: var(--bg-elevated);
+  --surface-foreground: var(--text-primary);
+  --surface-hover: color-mix(in oklab, var(--bg-elevated) 80%, var(--brand-primary) 20%);
+  --surface-secondary: var(--bg-elevated);
+  --surface-secondary-foreground: var(--text-primary);
+  --surface-tertiary: var(--bg-elevated);
+  --surface-tertiary-foreground: var(--text-primary);
+  --overlay: var(--bg-elevated);
+  --overlay-foreground: var(--text-primary);
+  --muted: var(--text-muted);
+  --default: var(--bg-elevated);
+  --default-foreground: var(--text-primary);
+  --accent: var(--brand-primary);
+  --accent-foreground: #04110b;
+  --border: rgba(16, 185, 129, 0.18);
+  --separator: rgba(16, 185, 129, 0.12);
+  --focus: var(--brand-primary);
+  --link: var(--text-brand);
+  --field-background: var(--bg-elevated);
+  --field-foreground: var(--text-primary);
+  --field-placeholder: var(--text-muted);
+  --field-border: rgba(16, 185, 129, 0.2);
+  --field-border-width: 1px;
+  --field-hover: color-mix(in oklab, var(--bg-elevated) 88%, var(--brand-primary) 12%);
+  --field-focus: var(--bg-elevated);
+  --field-border-hover: rgba(16, 185, 129, 0.4);
+  --field-border-focus: var(--brand-primary);
+  --field-shadow: none;
+  --radius: 0.75rem;
+  --field-radius: 0.5rem;
 }
 
 .light {
@@ -83,6 +117,38 @@
   --shadow-hover: 0 20px 60px -20px rgba(5, 150, 105, 0.3);
   --fx-loader-glow: 0 0 80px rgba(5, 150, 105, 0.18);
   --fx-grid-line: rgba(5, 150, 105, 0.38);
+
+  /* HeroUI light tokens. */
+  --background: var(--bg-base);
+  --foreground: var(--text-primary);
+  --surface: var(--bg-elevated);
+  --surface-foreground: var(--text-primary);
+  --surface-hover: color-mix(in oklab, var(--bg-elevated) 88%, var(--brand-primary) 12%);
+  --surface-secondary: var(--bg-elevated);
+  --surface-secondary-foreground: var(--text-primary);
+  --surface-tertiary: var(--bg-elevated);
+  --surface-tertiary-foreground: var(--text-primary);
+  --overlay: #ffffff;
+  --overlay-foreground: var(--text-primary);
+  --muted: var(--text-muted);
+  --default: var(--bg-elevated);
+  --default-foreground: var(--text-primary);
+  --accent: var(--brand-primary);
+  --accent-foreground: #ffffff;
+  --border: rgba(5, 150, 105, 0.2);
+  --separator: rgba(5, 150, 105, 0.12);
+  --focus: var(--brand-primary);
+  --link: var(--text-brand);
+  --field-background: var(--bg-elevated);
+  --field-foreground: var(--text-primary);
+  --field-placeholder: var(--text-muted);
+  --field-border: rgba(5, 150, 105, 0.2);
+  --field-border-width: 1px;
+  --field-hover: color-mix(in oklab, var(--bg-elevated) 94%, var(--brand-primary) 6%);
+  --field-focus: var(--bg-elevated);
+  --field-border-hover: rgba(5, 150, 105, 0.4);
+  --field-border-focus: var(--brand-primary);
+  --field-shadow: none;
 }
 
 @theme inline {
@@ -500,4 +566,14 @@ body {
 /* Hide the admin jump buttons while the iframe preview is full screen. */
 body:has([data-preview-expanded="true"]) .admin-scroll-buttons {
   display: none;
+}
+
+/* HeroUI Tabs: make the active admin section unmistakable. */
+.tabs__tab[data-selected="true"] {
+  background: var(--brand-primary);
+  color: var(--bg-base);
+}
+
+.tabs__tab[data-selected="true"] svg {
+  color: var(--bg-base);
 }
