@@ -215,7 +215,7 @@ export function AgentConsole() {
                 size="sm"
                 onPress={() => agentStore.close()}
                 aria-label={t.close}
-                className="min-h-0 size-7 text-text-muted hover:text-text-brand"
+                className="size-11 min-h-0 text-text-muted hover:text-text-brand sm:size-7"
               >
                 <X size={15} />
               </Button>
@@ -281,7 +281,7 @@ export function AgentConsole() {
                 variant="ghost"
                 size="sm"
                 onPress={() => send(suggestion)}
-                className="min-h-0 rounded-full border border-brand-primary/20 px-2.5 py-1 font-mono text-[9px] text-text-secondary hover:border-brand-primary/50 hover:text-text-brand"
+                className="min-h-11 rounded-full border border-brand-primary/20 px-2.5 py-1 font-mono text-[9px] text-text-secondary hover:border-brand-primary/50 hover:text-text-brand sm:min-h-0"
               >
                 {suggestion}
               </Button>
@@ -302,11 +302,12 @@ export function AgentConsole() {
             <Input
               ref={inputRef}
               id="agent-input"
+              name="question"
               value={input}
               onChange={(event) => setInput(event.target.value)}
               placeholder={t.placeholder}
               autoComplete="off"
-              className="min-w-0 flex-1 border-0 bg-transparent font-mono text-xs shadow-none"
+              className="min-w-0 flex-1 border-0 bg-transparent font-mono text-base shadow-none sm:text-xs"
             />
             <Button
               type="submit"
@@ -315,7 +316,7 @@ export function AgentConsole() {
               size="sm"
               isDisabled={loading || !input.trim()}
               aria-label={t.send}
-              className="min-h-0 size-7 text-text-brand"
+              className="size-11 min-h-0 text-text-brand sm:size-7"
             >
               <Send size={14} />
             </Button>

@@ -25,7 +25,11 @@ export function AdminLogin() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        setError(data?.error ?? "登录失败");
+        setError(
+          data?.error === "Invalid password"
+            ? "密码错误"
+            : data?.error ?? "登录失败",
+        );
         return;
       }
       router.refresh();
@@ -47,17 +51,22 @@ export function AdminLogin() {
         <form onSubmit={onSubmit} className="mt-6 space-y-4">
           <Input
             fullWidth
+            aria-label="管理密码"
+            name="password"
+            autoComplete="current-password"
             type="password"
+            className="min-h-11"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="管理密码"
             autoFocus
           />
-          {error && <p className="text-sm text-red-400">{error}</p>}
+          {error && <p role="alert" className="text-sm text-red-400">{error}</p>}
           <Button
             type="submit"
             fullWidth
             variant="primary"
+            className="min-h-11"
             isDisabled={loading || !password}
           >
             {loading ? "验证中..." : "登录"}

@@ -154,6 +154,8 @@ export function MailEditor() {
 
       {status.text && (
         <p
+          role="status"
+          aria-live="polite"
           className={cn(
             "text-sm",
             status.type === "success" ? "text-emerald-400" : "text-red-400",
@@ -163,7 +165,7 @@ export function MailEditor() {
         </p>
       )}
 
-      <Button variant="primary" onPress={onSave} isDisabled={saving}>
+      <Button variant="primary" className="min-h-11 sm:min-h-0" onPress={onSave} isDisabled={saving}>
         <Save size={16} />
         {saving ? "保存中..." : "保存设置"}
       </Button>

@@ -67,7 +67,7 @@ export function PersonalPreview({
               variant="ghost"
               size="sm"
               onPress={() => setExpanded((value) => !value)}
-              className="min-h-0 px-1.5 py-1 text-[10px] text-text-muted hover:text-text-brand"
+              className="min-h-11 px-1.5 py-1 text-[10px] text-text-muted hover:text-text-brand sm:min-h-0"
               aria-label={expanded ? "退出全屏预览" : "全屏预览"}
             >
               {expanded ? <X size={12} /> : <Maximize2 size={12} />}

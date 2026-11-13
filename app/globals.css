@@ -582,3 +582,16 @@ body:has([data-preview-expanded="true"]) .admin-scroll-buttons {
 .tabs__tab {
   transition: opacity 150ms var(--ease-smooth), box-shadow 150ms var(--ease-out);
 }
+
+@media (max-width: 639px) {
+  .tabs__tab {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 639px) {
+  .input,
+  .select__trigger {
+    min-height: 44px;
+  }
+}

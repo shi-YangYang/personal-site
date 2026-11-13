@@ -675,7 +675,7 @@ export function Terminal({
                 autoComplete="off"
                 autoCapitalize="off"
                 spellCheck={false}
-                className="min-w-0 flex-1 border-0 bg-transparent font-mono text-sm shadow-none"
+                className="min-w-0 flex-1 border-0 bg-transparent font-mono text-base shadow-none sm:text-sm"
               />
             </form>
           </div>

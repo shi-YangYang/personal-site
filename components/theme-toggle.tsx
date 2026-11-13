@@ -14,7 +14,7 @@ export function ThemeToggle() {
       size="sm"
       onPress={toggle}
       aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-      className="min-h-0 size-8 rounded-full text-text-muted hover:bg-brand-primary/5 hover:text-text-brand"
+      className="size-11 min-h-0 rounded-full text-text-muted hover:bg-brand-primary/5 hover:text-text-brand md:size-8"
     >
       {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
     </Button>

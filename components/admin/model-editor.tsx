@@ -200,6 +200,7 @@ export function ModelEditor() {
           <Button
             variant="secondary"
             size="sm"
+            className="min-h-11 sm:min-h-0"
             onPress={onListModels}
             isDisabled={listing || !baseUrl || (!apiKey && !apiKeySet)}
           >
@@ -209,6 +210,7 @@ export function ModelEditor() {
           <Button
             variant="secondary"
             size="sm"
+            className="min-h-11 sm:min-h-0"
             onPress={onTest}
             isDisabled={testing || !baseUrl || !model || (!apiKey && !apiKeySet)}
           >
@@ -218,6 +220,7 @@ export function ModelEditor() {
           <Button
             variant="primary"
             size="sm"
+            className="min-h-11 sm:min-h-0"
             onPress={onSave}
             isDisabled={saving || !baseUrl || !model || (!apiKey && !apiKeySet)}
           >
@@ -228,6 +231,8 @@ export function ModelEditor() {
 
         {status.text && (
           <p
+            role="status"
+            aria-live="polite"
             className={cn(
               "text-xs leading-relaxed",
               status.type === "success" ? "text-emerald-400" : "text-red-400",

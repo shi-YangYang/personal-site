@@ -49,13 +49,14 @@ export function AdminPanel({
         <div className="flex items-center gap-2">
           <Link
             href="/zh"
-            className="rounded-lg border border-brand-primary/20 px-3 py-1.5 text-xs text-text-secondary hover:text-text-brand hover:border-brand-primary/40 transition-colors"
+            className="inline-flex min-h-11 items-center rounded-lg border border-brand-primary/20 px-3 py-1.5 text-xs text-text-secondary transition-colors hover:border-brand-primary/40 hover:text-text-brand sm:min-h-0"
           >
             查看网站
           </Link>
           <Button
             variant="secondary"
             size="sm"
+            className="min-h-11 sm:min-h-0"
             onPress={handleLogout}
           >
             <LogOut size={12} />

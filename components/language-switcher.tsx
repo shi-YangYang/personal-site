@@ -32,7 +32,7 @@ export function LanguageSwitcher() {
           onPress={() => switchTo(loc)}
           isDisabled={pending}
           className={cn(
-            "min-h-11 rounded-full px-3 py-1 text-xs md:min-h-9",
+            "h-11 rounded-full px-3 py-1 text-xs md:h-9",
             currentLocale === loc
               ? "bg-brand-primary text-bg-base font-medium"
               : "text-text-muted hover:bg-brand-primary/10 hover:text-text-secondary",

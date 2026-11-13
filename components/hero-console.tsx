@@ -162,7 +162,7 @@ export function HeroConsole({
                     onChange={(event) => setQuestion(event.target.value)}
                     placeholder={t.prompt}
                     autoComplete="off"
-                    className="min-w-0 flex-1 border-0 bg-transparent font-mono text-[11px] shadow-none"
+                    className="min-w-0 flex-1 border-0 bg-transparent font-mono text-base shadow-none sm:text-[11px]"
                   />
                   <Button
                     type="submit"
@@ -170,7 +170,7 @@ export function HeroConsole({
                     variant="ghost"
                     size="sm"
                     aria-label={t.send}
-                    className="min-h-0 size-7 text-text-brand"
+                    className="size-11 min-h-0 text-text-brand sm:size-7"
                   >
                     <ArrowRight size={13} />
                   </Button>
