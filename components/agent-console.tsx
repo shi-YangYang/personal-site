@@ -169,7 +169,7 @@ export function AgentConsole() {
         onPress={() => agentStore.toggle()}
         aria-expanded={state.open}
         aria-label={state.open ? t.close : t.button}
-        className="fixed bottom-5 left-5 z-[70] hidden items-center gap-2 rounded-full border border-brand-primary/30 bg-bg-elevated/90 px-4 py-2.5 font-mono text-[10px] tracking-[0.12em] text-text-brand shadow-[0_0_30px_rgba(16,185,129,0.18)] backdrop-blur-xl hover:border-brand-primary/60 hover:glow md:inline-flex sm:bottom-6 sm:left-6"
+        className="fixed bottom-3 left-4 z-[70] hidden items-center gap-2 rounded-full border border-brand-primary/30 bg-bg-elevated/90 px-4 py-2.5 font-mono text-[10px] tracking-[0.12em] text-text-brand shadow-[0_0_30px_rgba(16,185,129,0.18)] backdrop-blur-xl hover:border-brand-primary/60 hover:glow md:inline-flex sm:bottom-4 sm:left-5"
       >
         <span className="relative flex size-2">
           <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand-glow opacity-60" />

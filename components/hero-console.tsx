@@ -61,14 +61,15 @@ export function HeroConsole({
     <>
       <section
         id="home"
-        className="snap-section relative flex min-h-[100svh] items-center overflow-hidden"
+        className="snap-section relative flex min-h-[100svh] flex-col overflow-hidden"
       >
         <div className="absolute inset-0 bg-grid opacity-20" />
         <div className="absolute inset-0 bg-glow-radial" />
         <Hero3D />
         <div className="scanlines pointer-events-none absolute inset-0 opacity-25" />
 
-        <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-10 px-6 py-16 lg:grid-cols-[1.08fr_0.92fr] lg:gap-14">
+        <div className="relative z-10 flex w-full flex-1 items-center">
+          <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-10 px-6 py-16 lg:grid-cols-[1.08fr_0.92fr] lg:gap-14">
           <div>
             <FadeIn>
               <div className="inline-flex items-center gap-2 rounded-full border border-brand-primary/30 bg-brand-primary/5 px-3 py-1 font-mono text-[10px] text-text-brand">
@@ -112,15 +113,15 @@ export function HeroConsole({
           <FadeIn delay={0.2}>
             <div className="relative overflow-hidden rounded-2xl border border-brand-primary/10 bg-bg-elevated/70 shadow-[0_30px_90px_-40px_rgba(16,185,129,0.35)] backdrop-blur-xl">
               <div className="flex items-center justify-between gap-3 bg-brand-primary/[0.05] px-4 py-3">
-                <div className="flex items-center gap-2">
-                  <span className="size-2 rounded-full bg-[#ff5f57]" />
-                  <span className="size-2 rounded-full bg-[#febc2e]" />
-                  <span className="size-2 rounded-full bg-brand-glow" />
-                  <span className="ml-2 font-mono text-[10px] tracking-[0.08em] text-text-secondary">
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className="size-2 shrink-0 rounded-full bg-[#ff5f57]" />
+                  <span className="size-2 shrink-0 rounded-full bg-[#febc2e]" />
+                  <span className="size-2 shrink-0 rounded-full bg-brand-glow" />
+                  <span className="ml-2 truncate whitespace-nowrap font-mono text-[10px] tracking-[0.08em] text-text-secondary">
                     operator@personal-site
                   </span>
                 </div>
-                <span className="flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-[0.1em] text-text-muted">
+                <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap font-mono text-[9px] uppercase tracking-[0.1em] text-text-muted">
                   <span className="size-1.5 rounded-full bg-brand-glow" />
                   {t.online}
                 </span>
@@ -177,43 +178,44 @@ export function HeroConsole({
               </form>
             </div>
           </FadeIn>
+          </div>
         </div>
 
-        <div className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 text-text-muted">
+        <div className="absolute bottom-28 left-1/2 z-10 hidden -translate-x-1/2 text-text-muted sm:block">
           <ArrowDown size={18} />
         </div>
-      </section>
 
-      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-8 gap-y-3 border-t border-brand-primary/10 px-6 py-4 font-mono text-[10px] uppercase tracking-[0.12em] text-text-muted">
-        <span className="flex items-center gap-2">
-          <span className="text-text-brand">
-            {String(data.projects.length).padStart(2, "0")}
+        <div className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-3 items-center gap-x-4 gap-y-3 border-t border-brand-primary/10 px-6 py-4 font-mono text-[10px] uppercase tracking-[0.12em] text-text-muted sm:flex sm:flex-wrap sm:gap-x-8">
+          <span className="flex items-center gap-2">
+            <span className="text-text-brand">
+              {String(data.projects.length).padStart(2, "0")}
+            </span>
+            {t.metrics.projects}
           </span>
-          {t.metrics.projects}
-        </span>
-        <span className="flex items-center gap-2">
-          <span className="text-text-brand">
-            {String(postCount).padStart(2, "0")}
+          <span className="flex items-center gap-2">
+            <span className="text-text-brand">
+              {String(postCount).padStart(2, "0")}
+            </span>
+            {t.metrics.posts}
           </span>
-          {t.metrics.posts}
-        </span>
-        <span className="flex items-center gap-2">
-          <span className="text-text-brand">
-            {String(data.skills.length).padStart(2, "0")}
+          <span className="flex items-center gap-2">
+            <span className="text-text-brand">
+              {String(data.skills.length).padStart(2, "0")}
+            </span>
+            {t.metrics.skills}
           </span>
-          {t.metrics.skills}
-        </span>
-        <Button
-          variant="ghost"
-          size="sm"
-          onPress={() => fxStore.toggle()}
-          aria-pressed={rain}
-          className="ml-auto min-h-0 gap-1.5 rounded-full border border-brand-primary/20 px-2.5 py-1 text-[10px] text-text-muted hover:border-brand-primary/50 hover:text-text-brand"
-        >
-          <CloudRain size={12} />
-          {t.rain} {rain ? t.rainOn : t.rainOff}
-        </Button>
-      </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onPress={() => fxStore.toggle()}
+            aria-pressed={rain}
+            className="col-span-3 mt-1 min-h-11 w-full justify-center gap-1.5 rounded-full border border-brand-primary/20 px-2.5 py-1 text-[10px] text-text-muted hover:border-brand-primary/50 hover:text-text-brand sm:col-span-1 sm:ml-auto sm:mt-0 sm:min-h-0 sm:w-auto"
+          >
+            <CloudRain size={12} />
+            {t.rain} {rain ? t.rainOn : t.rainOff}
+          </Button>
+        </div>
+      </section>
     </>
   );
 }
