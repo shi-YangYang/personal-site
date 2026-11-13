@@ -161,9 +161,6 @@ export function PersonalEditor({
               <h2 className="text-sm font-mono uppercase tracking-wider text-text-brand">
                 个人信息
               </h2>
-              <p className="mt-1 text-xs text-text-muted">
-                切换分区编辑，右侧实时预览。
-              </p>
             </div>
             <div className="flex items-center gap-2">
               <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-text-muted">

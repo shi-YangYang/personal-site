@@ -3,14 +3,15 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { LogOut, UserRound, Mail, ArrowUp, ArrowDown } from "lucide-react";
+import { LogOut, UserRound, Mail, Cpu, ArrowUp, ArrowDown } from "lucide-react";
 import { SectionLabel } from "@/components/section-label";
 import { PersonalEditor } from "./personal-editor";
 import { MailEditor } from "./mail-editor";
+import { ModelEditor } from "./model-editor";
 import { cn } from "@/lib/utils";
 import { apiUrl } from "@/lib/api";
 
-type Tab = "personal" | "mail";
+type Tab = "personal" | "mail" | "model";
 
 export function AdminPanel({
   postCounts,
@@ -71,10 +72,22 @@ export function AdminPanel({
           icon={<Mail size={14} />}
           label="邮件通知"
         />
+        <TabButton
+          active={tab === "model"}
+          onClick={() => setTab("model")}
+          icon={<Cpu size={14} />}
+          label="模型配置"
+        />
       </nav>
 
       <div className="mt-8">
-        {tab === "personal" ? <PersonalEditor postCounts={postCounts} /> : <MailEditor />}
+        {tab === "personal" ? (
+          <PersonalEditor postCounts={postCounts} />
+        ) : tab === "mail" ? (
+          <MailEditor />
+        ) : (
+          <ModelEditor />
+        )}
       </div>
 
       <div className="admin-scroll-buttons fixed bottom-6 right-6 z-40 flex flex-col gap-2">

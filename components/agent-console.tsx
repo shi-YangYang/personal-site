@@ -26,6 +26,7 @@ const copy = {
     send: "发送",
     thinking: "检索站内资料…",
     error: "Agent 暂时不可用，请稍后再试。",
+    rateLimited: "请求太频繁，请稍后再试。",
     hint: "⌘J 打开 · Esc 关闭",
     suggestions: ["你做过什么项目？", "你的技术栈是什么？", "怎么联系你？"],
   },
@@ -39,6 +40,7 @@ const copy = {
     send: "Send",
     thinking: "Searching the site…",
     error: "The agent is unavailable right now. Try again shortly.",
+    rateLimited: "Too many requests. Try again shortly.",
     hint: "⌘J open · Esc close",
     suggestions: ["What have you built?", "What is your stack?", "How do I reach you?"],
   },
@@ -58,8 +60,25 @@ export function AgentConsole() {
   const inputRef = useRef<HTMLInputElement>(null);
   const lastRequest = useRef(0);
   const sendRef = useRef<(question: string) => void>(() => {});
+  const sessionRef = useRef("");
 
   useEffect(() => agentStore.subscribe(setState), []);
+
+  useEffect(() => {
+    try {
+      let id = sessionStorage.getItem("agent-session");
+      if (!id || !/^[a-zA-Z0-9_-]{8,64}$/.test(id)) {
+        id =
+          typeof crypto !== "undefined" && "randomUUID" in crypto
+            ? crypto.randomUUID()
+            : `agent-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+        sessionStorage.setItem("agent-session", id);
+      }
+      sessionRef.current = id;
+    } catch {
+      sessionRef.current = `agent-${Date.now()}`;
+    }
+  }, []);
 
   useEffect(() => {
     if (!state.open) return;
@@ -91,10 +110,20 @@ export function AgentConsole() {
         const response = await fetch(apiUrl("/api/agent/ask"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question, locale }),
+          body: JSON.stringify({
+            question,
+            locale,
+            session_id: sessionRef.current || undefined,
+          }),
         });
         const data = await response.json().catch(() => null);
-        if (!response.ok) throw new Error(data?.error ?? "agent failed");
+        if (!response.ok) {
+          throw new Error(
+            response.status === 429
+              ? t.rateLimited
+              : data?.error ?? t.error,
+          );
+        }
         setMessages((prev) => [
           ...prev,
           {
@@ -107,13 +136,19 @@ export function AgentConsole() {
         if (Array.isArray(data.suggestions) && data.suggestions.length) {
           setSuggestions(data.suggestions.map(String).slice(0, 4));
         }
-      } catch {
-        setMessages((prev) => [...prev, { role: "agent", text: t.error }]);
+      } catch (error) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "agent",
+            text: error instanceof Error ? error.message : t.error,
+          },
+        ]);
       } finally {
         setLoading(false);
       }
     },
-    [loading, locale, t.error],
+    [loading, locale, t.error, t.rateLimited],
   );
 
   useEffect(() => {

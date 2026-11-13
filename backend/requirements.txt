@@ -1,3 +1,6 @@
 fastapi==0.115.6
 uvicorn[standard]==0.34.0
 json5==0.9.28
+langgraph==0.6.11
+langchain-openai==0.3.35
+langchain-core==0.3.86

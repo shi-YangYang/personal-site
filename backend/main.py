@@ -5,14 +5,15 @@ import os
 import re
 import threading
 import time
-from typing import Any
+from typing import Any, Optional
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field
 
-from . import agent
+from . import agent_graph
+from .agent_config import is_llm_configured, mask_agent_config, read_agent_config, write_agent_config
 from .auth import (
     has_valid_session,
     is_configured,
@@ -36,7 +37,9 @@ from .content import (
     write_mail_config,
     write_personal,
 )
+from .limits import AgentLimiter
 from .mail import send_contact_mail
+from .model_provider import list_models, test_model
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 log = logging.getLogger("personal-site.api")
@@ -60,13 +63,20 @@ app.add_middleware(
 
 _rate_lock = threading.Lock()
 _rate_buckets: dict[str, list[float]] = {}
+_agent_limiter = AgentLimiter()
 
 
 def _client_ip(request: Request) -> str:
-    forwarded = request.headers.get("x-forwarded-for", "")
-    if forwarded:
-        return forwarded.split(",")[0].strip()
-    return request.client.host if request.client else "unknown"
+    peer = request.client.host if request.client else "unknown"
+    # Caddy is the only trusted proxy in the single-container deployment.
+    if peer in {"127.0.0.1", "::1"}:
+        real_ip = request.headers.get("x-real-ip", "").strip()
+        if real_ip:
+            return real_ip
+        forwarded = request.headers.get("x-forwarded-for", "")
+        if forwarded:
+            return forwarded.split(",")[-1].strip()
+    return peer
 
 
 def _rate_limit(key: str, limit: int, window: int = 60) -> None:
@@ -87,6 +97,12 @@ async def _http_exception(_: Request, exc: HTTPException) -> JSONResponse:
 class AskBody(BaseModel):
     question: str = Field(min_length=1, max_length=500)
     locale: str = "zh"
+    session_id: Optional[str] = Field(
+        default=None,
+        min_length=8,
+        max_length=64,
+        pattern=r"^[a-zA-Z0-9_-]+$",
+    )
 
 
 class ContactBody(BaseModel):
@@ -97,6 +113,18 @@ class ContactBody(BaseModel):
 
 class LoginBody(BaseModel):
     password: str = Field(min_length=1, max_length=500)
+
+
+class AgentConfigBody(BaseModel):
+    base_url: str = Field(min_length=1, max_length=500)
+    model: str = Field(min_length=1, max_length=200)
+    api_key: str = Field(default="", max_length=500)
+
+
+class AgentProbeBody(BaseModel):
+    base_url: str = Field(default="", max_length=500)
+    model: str = Field(default="", max_length=200)
+    api_key: str = Field(default="", max_length=500)
 
 
 class MailBody(BaseModel):
@@ -117,22 +145,38 @@ def health() -> dict[str, str]:
 
 @app.get("/api/agent/health")
 def agent_health() -> dict[str, str]:
-    mode = "llm" if agent.AGENT_LLM_BASE_URL and agent.AGENT_LLM_API_KEY else "local"
+    mode = "llm" if is_llm_configured() else "local"
     return {"status": "ok", "mode": mode}
 
 
 @app.post("/api/agent/ask")
-def agent_ask(body: AskBody, request: Request) -> dict[str, Any]:
-    _rate_limit(f"agent:{_client_ip(request)}", 20)
+def agent_ask(body: AskBody, request: Request) -> Any:
     locale = body.locale if body.locale in LOCALES else "zh"
     question = body.question.strip()
     if not question:
         raise HTTPException(status_code=400, detail="Question is required")
+
+    decision = _agent_limiter.begin(_client_ip(request))
+    if not decision.allowed:
+        message = (
+            "请求太频繁，请稍后再试。"
+            if locale == "zh"
+            else "Too many requests. Try again shortly."
+        )
+        return JSONResponse(
+            {"error": message, "retryAfter": decision.retry_after},
+            status_code=429,
+            headers={"Retry-After": str(decision.retry_after)},
+        )
+
     try:
-        result = agent.ask(question, locale)
+        result = agent_graph.ask(question, locale, body.session_id)
     except Exception as error:  # pragma: no cover - defensive
         log.exception("agent failed")
         raise HTTPException(status_code=500, detail="Agent is temporarily unavailable") from error
+    finally:
+        _agent_limiter.end()
+
     return {"question": question, "locale": locale, **result}
 
 
@@ -246,6 +290,61 @@ def mail_post(body: MailBody, request: Request) -> dict[str, bool]:
         raise HTTPException(status_code=400, detail="启用时需填写 SMTP 服务器、邮箱和授权码")
     write_mail_config(config)
     return {"ok": True}
+
+
+@app.get("/api/admin/agent")
+def admin_agent_get(request: Request) -> dict[str, Any]:
+    require_admin(request)
+    return mask_agent_config()
+
+
+@app.post("/api/admin/agent")
+def admin_agent_save(body: AgentConfigBody, request: Request) -> dict[str, Any]:
+    require_admin(request)
+    base_url = body.base_url.strip().rstrip("/")
+    model = body.model.strip()
+    if not re.match(r"^https?://", base_url):
+        raise HTTPException(status_code=400, detail="Base URL must start with http:// or https://")
+    current = read_agent_config()
+    api_key = body.api_key.strip() or current.get("api_key", "")
+    if not api_key:
+        raise HTTPException(status_code=400, detail="API key is required")
+    write_agent_config({"base_url": base_url, "api_key": api_key, "model": model})
+    return mask_agent_config()
+
+
+def _probe_config(body: AgentProbeBody) -> dict[str, str]:
+    current = read_agent_config()
+    return {
+        "base_url": (body.base_url.strip() or current.get("base_url", "")).rstrip("/"),
+        "api_key": body.api_key.strip() or current.get("api_key", ""),
+        "model": body.model.strip() or current.get("model", ""),
+    }
+
+
+@app.post("/api/admin/agent/test")
+def admin_agent_test(body: AgentProbeBody, request: Request) -> dict[str, Any]:
+    require_admin(request)
+    config = _probe_config(body)
+    if not config["base_url"] or not config["api_key"] or not config["model"]:
+        raise HTTPException(status_code=400, detail="Base URL, API key and model are required")
+    try:
+        return test_model(config["base_url"], config["api_key"], config["model"])
+    except Exception as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
+
+
+@app.post("/api/admin/agent/models")
+def admin_agent_models(body: AgentProbeBody, request: Request) -> dict[str, Any]:
+    require_admin(request)
+    config = _probe_config(body)
+    if not config["base_url"] or not config["api_key"]:
+        raise HTTPException(status_code=400, detail="Base URL and API key are required")
+    try:
+        models = list_models(config["base_url"], config["api_key"])
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
+    return {"models": models}
 
 
 @app.get("/api/admin/session")
