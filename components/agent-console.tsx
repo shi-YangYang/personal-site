@@ -281,7 +281,7 @@ export function AgentConsole() {
                 variant="ghost"
                 size="sm"
                 onPress={() => send(suggestion)}
-                className="min-h-11 rounded-full border border-brand-primary/20 px-2.5 py-1 font-mono text-[9px] text-text-secondary hover:border-brand-primary/50 hover:text-text-brand sm:min-h-0"
+                className="min-h-11 rounded-full border border-brand-primary/20 px-2.5 py-1 font-mono text-[10px] text-text-secondary hover:border-brand-primary/50 hover:text-text-brand sm:min-h-0 sm:text-[9px]"
               >
                 {suggestion}
               </Button>
