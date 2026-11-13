@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Button } from "@heroui/react";
 import { cn } from "@/lib/utils";
-import { useT } from "./i18n-provider";
+import { useI18n } from "./i18n-provider";
 import { LanguageSwitcher } from "./language-switcher";
 import { ThemeToggle } from "./theme-toggle";
 import { terminalStore } from "@/lib/terminal-store";
@@ -32,7 +33,7 @@ const siteMap = [
 ] as const;
 
 export function Navbar() {
-  const t = useT();
+  const { t, locale } = useI18n();
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -95,12 +96,12 @@ export function Navbar() {
           )}
         >
           <div className="relative" ref={dirRef}>
-            <button
-              type="button"
-              onClick={() => setDirOpen((v) => !v)}
+            <Button
+              variant="ghost"
+              onPress={() => setDirOpen((v) => !v)}
               aria-haspopup="menu"
               aria-expanded={dirOpen}
-              className="flex items-center font-mono text-sm group"
+              className="flex min-h-0 items-center bg-transparent px-0 font-mono text-sm group"
             >
               <TerminalSquare size={16} className="mr-2 shrink-0 text-brand-glow" />
               <span className="flex min-w-0 items-center sm:w-[200px] md:w-[220px]">
@@ -115,7 +116,7 @@ export function Navbar() {
                   )}
                 />
               </span>
-            </button>
+            </Button>
 
             {dirOpen && (
               <div
@@ -173,37 +174,43 @@ export function Navbar() {
           </ul>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => terminalStore.toggle()}
-              className="p-2 text-text-secondary hover:text-text-brand transition-colors"
+            <Button
+              isIconOnly
+              variant="ghost"
+              size="sm"
+              onPress={() => terminalStore.toggle()}
+              className="hidden min-h-0 size-11 text-text-secondary hover:text-text-brand md:inline-flex md:size-9"
               aria-label="Toggle visitor terminal"
             >
               <TerminalSquare size={18} />
-            </button>
-            <button
-              type="button"
-              onClick={() => agentStore.open()}
-              className="p-2 text-text-secondary hover:text-text-brand transition-colors"
+            </Button>
+            <Button
+              isIconOnly
+              variant="ghost"
+              size="sm"
+              onPress={() => agentStore.open()}
+              className="hidden min-h-0 size-11 text-text-secondary hover:text-text-brand md:inline-flex md:size-9"
               aria-label="Open site agent"
             >
               <Bot size={18} />
-            </button>
+            </Button>
             <ThemeToggle />
             <LanguageSwitcher />
-            <button
-              type="button"
-              onClick={() => setOpen((v) => !v)}
-              className="md:hidden p-2 text-text-secondary hover:text-text-brand"
+            <Button
+              isIconOnly
+              variant="ghost"
+              size="sm"
+              onPress={() => setOpen((v) => !v)}
+              className="min-h-0 size-11 text-text-secondary hover:text-text-brand md:hidden"
               aria-label="Toggle menu"
             >
               {open ? <X size={18} /> : <Menu size={18} />}
-            </button>
+            </Button>
           </div>
         </nav>
 
         {open && (
-          <div className="md:hidden mt-2 glass rounded-2xl border-brand-primary/20 p-2">
+          <div className="md:hidden mt-2 rounded-2xl border border-brand-primary/20 bg-bg-elevated/95 p-2 shadow-[var(--shadow-elevated)] backdrop-blur-xl">
             <ul className="flex flex-col">
               {navItems.map((item) => {
                 const href = item.href
@@ -223,6 +230,34 @@ export function Navbar() {
                 );
               })}
             </ul>
+            <div className="mt-2 flex flex-col gap-1 border-t border-brand-primary/10 pt-2">
+              <Button
+                fullWidth
+                size="lg"
+                variant="ghost"
+                onPress={() => {
+                  setOpen(false);
+                  terminalStore.toggle();
+                }}
+                className="justify-start"
+              >
+                <TerminalSquare size={16} />
+                {locale === "zh" ? "终端" : "Terminal"}
+              </Button>
+              <Button
+                fullWidth
+                size="lg"
+                variant="ghost"
+                onPress={() => {
+                  setOpen(false);
+                  agentStore.open();
+                }}
+                className="justify-start"
+              >
+                <Bot size={16} />
+                {locale === "zh" ? "Agent" : "Agent"}
+              </Button>
+            </div>
           </div>
         )}
       </div>

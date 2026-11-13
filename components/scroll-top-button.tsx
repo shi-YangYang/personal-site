@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Button } from "@heroui/react";
 import { ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -29,16 +30,17 @@ export function ScrollTopButton() {
   const c = 2 * Math.PI * r;
 
   return (
-    <button
-      type="button"
-      onClick={goTop}
+    <Button
+      isIconOnly
+      variant="ghost"
+      onPress={goTop}
       aria-label="Back to top"
       className={cn(
-        "fixed bottom-6 right-6 z-50 size-11 rounded-full glass flex items-center justify-center",
-        "text-text-secondary hover:text-text-brand hover:glow transition-all duration-300",
+        "fixed bottom-6 right-6 z-50 size-11 rounded-full glass text-text-secondary hover:text-text-brand hover:glow",
+        "transition-all duration-300",
         visible
           ? "opacity-100 translate-y-0"
-          : "opacity-0 translate-y-4 pointer-events-none",
+          : "pointer-events-none opacity-0 translate-y-4",
       )}
     >
       <svg className="absolute inset-0 -rotate-90" viewBox="0 0 44 44" aria-hidden>
@@ -64,6 +66,6 @@ export function ScrollTopButton() {
         />
       </svg>
       <ArrowUp size={16} className="relative" />
-    </button>
+    </Button>
   );
 }

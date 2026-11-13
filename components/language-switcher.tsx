@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useTransition } from "react";
+import { Button } from "@heroui/react";
 import { localeNames, locales, type Locale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
@@ -24,21 +25,22 @@ export function LanguageSwitcher() {
   return (
     <div className="flex items-center gap-0.5 rounded-full border border-brand-primary/20 bg-bg-base/50 text-xs font-mono">
       {locales.map((loc) => (
-        <button
+        <Button
           key={loc}
-          type="button"
-          onClick={() => switchTo(loc)}
-          disabled={pending}
+          variant="ghost"
+          size="sm"
+          onPress={() => switchTo(loc)}
+          isDisabled={pending}
           className={cn(
-            "px-3 py-1 rounded-full transition-colors",
+            "min-h-11 rounded-full px-3 py-1 text-xs md:min-h-9",
             currentLocale === loc
               ? "bg-brand-primary text-bg-base font-medium"
-              : "text-text-muted hover:text-text-secondary hover:bg-brand-primary/10",
+              : "text-text-muted hover:bg-brand-primary/10 hover:text-text-secondary",
           )}
           aria-label={localeNames[loc]}
         >
           {loc.toUpperCase()}
-        </button>
+        </Button>
       ))}
     </div>
   );

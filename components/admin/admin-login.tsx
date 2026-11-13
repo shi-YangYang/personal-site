@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { Button, Input } from "@heroui/react";
 import { SectionLabel } from "@/components/section-label";
 import { apiUrl } from "@/lib/api";
 
@@ -44,22 +45,23 @@ export function AdminLogin() {
           输入管理密码以继续
         </p>
         <form onSubmit={onSubmit} className="mt-6 space-y-4">
-          <input
+          <Input
+            fullWidth
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="管理密码"
             autoFocus
-            className="w-full rounded-xl border border-brand-primary/20 bg-bg-elevated px-4 py-2.5 text-sm outline-none focus:border-brand-primary/60 transition-colors"
           />
           {error && <p className="text-sm text-red-400">{error}</p>}
-          <button
+          <Button
             type="submit"
-            disabled={loading || !password}
-            className="w-full rounded-xl bg-brand-primary px-4 py-2.5 text-sm font-semibold text-bg-base hover:opacity-90 disabled:opacity-40 transition-opacity"
+            fullWidth
+            variant="primary"
+            isDisabled={loading || !password}
           >
             {loading ? "验证中..." : "登录"}
-          </button>
+          </Button>
         </form>
       </div>
     </div>

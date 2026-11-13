@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
+import { Button, Input } from "@heroui/react";
 import type { Locale } from "@/lib/i18n";
 import type { PersonalData } from "@/content/data";
 import { cn } from "@/lib/utils";
@@ -613,11 +614,13 @@ export function Terminal({
         >
           <div className="rounded-xl overflow-hidden border border-brand-primary/20 bg-bg-elevated/95 backdrop-blur-md shadow-[var(--fx-loader-glow),var(--shadow-elevated)]">
             <div className="term-chrome flex items-center gap-2 px-4 py-3 border-b border-white/5 bg-black/40">
-              <button
-                type="button"
-                onClick={() => terminalStore.set(false)}
+              <Button
+                isIconOnly
+                variant="ghost"
+                size="sm"
+                onPress={() => terminalStore.set(false)}
                 aria-label="Close terminal"
-                className="size-2.5 rounded-full bg-[#ff5f57] hover:brightness-125 transition"
+                className="min-h-0 size-2.5 rounded-full bg-[#ff5f57] p-0 hover:brightness-125"
               />
               <span className="size-2.5 rounded-full bg-[#febc2e]" />
               <span className="size-2.5 rounded-full bg-brand-glow" />
@@ -662,7 +665,7 @@ export function Terminal({
               <span className="font-mono text-xs text-brand-glow shrink-0 select-none">
                 {c.prompt}
               </span>
-              <input
+              <Input
                 ref={inputRef}
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
@@ -672,7 +675,7 @@ export function Terminal({
                 autoComplete="off"
                 autoCapitalize="off"
                 spellCheck={false}
-                className="flex-1 min-w-0 bg-transparent font-mono text-sm text-text-primary outline-none placeholder:text-text-muted caret-brand-glow"
+                className="min-w-0 flex-1 border-0 bg-transparent font-mono text-sm shadow-none"
               />
             </form>
           </div>

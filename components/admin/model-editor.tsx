@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Button, Input, Label, ListBox, Select } from "@heroui/react";
 import { Cpu, List, Save, TestTube2 } from "lucide-react";
 import { apiUrl } from "@/lib/api";
 import { cn } from "@/lib/utils";
-
-const inputCls =
-  "w-full rounded-lg border border-brand-primary/20 bg-bg-elevated px-3 py-2 text-sm outline-none transition-colors focus:border-brand-primary/60";
 
 type Status = { type: "idle" | "success" | "error"; text: string };
 
@@ -131,87 +129,101 @@ export function ModelEditor() {
           </div>
         </div>
 
-        <label className="block">
-          <span className="mb-1 block text-xs text-text-secondary">Base URL</span>
-          <input
+        <div className="block space-y-1">
+          <Label className="text-xs text-text-secondary">Base URL</Label>
+          <Input
+            fullWidth
+            aria-label="Base URL"
             value={baseUrl}
             onChange={(event) => setBaseUrl(event.target.value)}
             placeholder="https://api.deepseek.com/v1"
-            className={cn(inputCls, "font-mono")}
+            className="font-mono"
             autoComplete="off"
           />
-        </label>
+        </div>
 
-        <label className="block">
-          <span className="mb-1 block text-xs text-text-secondary">API Key</span>
-          <input
+        <div className="block space-y-1">
+          <Label className="text-xs text-text-secondary">API Key</Label>
+          <Input
+            fullWidth
+            aria-label="API Key"
             type="password"
             value={apiKey}
             onChange={(event) => setApiKey(event.target.value)}
             placeholder={apiKeySet ? "已配置，留空保持不变" : "sk-..."}
-            className={cn(inputCls, "font-mono")}
+            className="font-mono"
             autoComplete="new-password"
           />
-        </label>
+        </div>
 
-        <label className="block">
-          <span className="mb-1 block text-xs text-text-secondary">Model</span>
+        <div className="block space-y-1">
+          <Label className="text-xs text-text-secondary">Model</Label>
           <div className="flex flex-col gap-2 sm:flex-row">
-            <input
+            <Input
+              fullWidth
+              aria-label="Model"
               value={model}
               onChange={(event) => setModel(event.target.value)}
               placeholder="deepseek-chat"
-              className={cn(inputCls, "font-mono")}
+              className="font-mono"
               autoComplete="off"
             />
             {models.length > 0 && (
-              <select
-                value={models.includes(model) ? model : ""}
-                onChange={(event) => {
-                  if (event.target.value) setModel(event.target.value);
+              <Select
+                className="sm:w-64"
+                selectedKey={models.includes(model) ? model : null}
+                onSelectionChange={(key) => {
+                  if (key) setModel(String(key));
                 }}
                 aria-label="从模型列表选择"
-                className="rounded-lg border border-brand-primary/20 bg-bg-elevated px-3 py-2 text-sm text-text-primary outline-none transition-colors focus:border-brand-primary/60 sm:w-56"
+                placeholder="从列表选择"
               >
-                <option value="">从列表选择</option>
-                {models.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
+                <Select.Trigger>
+                  <Select.Value />
+                  <Select.Indicator />
+                </Select.Trigger>
+                <Select.Popover>
+                  <ListBox>
+                    {models.map((item) => (
+                      <ListBox.Item key={item} id={item}>
+                        {item}
+                      </ListBox.Item>
+                    ))}
+                  </ListBox>
+                </Select.Popover>
+              </Select>
             )}
           </div>
-        </label>
+        </div>
 
         <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={onListModels}
-            disabled={listing || !baseUrl || (!apiKey && !apiKeySet)}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-brand-primary/20 px-3 py-2 text-xs text-text-secondary transition-colors hover:border-brand-primary/40 hover:text-text-brand disabled:opacity-40"
+          <Button
+            variant="secondary"
+            size="sm"
+            onPress={onListModels}
+            isDisabled={listing || !baseUrl || (!apiKey && !apiKeySet)}
           >
             <List size={14} />
             {listing ? "获取中..." : "获取模型列表"}
-          </button>
-          <button
-            type="button"
-            onClick={onTest}
-            disabled={testing || !baseUrl || !model || (!apiKey && !apiKeySet)}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-brand-primary/20 px-3 py-2 text-xs text-text-secondary transition-colors hover:border-brand-primary/40 hover:text-text-brand disabled:opacity-40"
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            onPress={onTest}
+            isDisabled={testing || !baseUrl || !model || (!apiKey && !apiKeySet)}
           >
             <TestTube2 size={14} />
             {testing ? "测试中..." : "测试连接"}
-          </button>
-          <button
-            type="button"
-            onClick={onSave}
-            disabled={saving || !baseUrl || !model || (!apiKey && !apiKeySet)}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-brand-primary px-4 py-2 text-xs font-semibold text-bg-base transition-opacity hover:opacity-90 disabled:opacity-40"
+          </Button>
+          <Button
+            variant="primary"
+            size="sm"
+            onPress={onSave}
+            isDisabled={saving || !baseUrl || !model || (!apiKey && !apiKeySet)}
           >
             <Save size={14} />
             {saving ? "保存中..." : "保存配置"}
-          </button>
+          </Button>
         </div>
 
         {status.text && (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Button, Input, Modal } from "@heroui/react";
 import { Bot, Send, X } from "lucide-react";
 import { useI18n } from "./i18n-provider";
 import { agentStore, type AgentState } from "@/lib/agent-store";
@@ -164,12 +165,11 @@ export function AgentConsole() {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => agentStore.toggle()}
+      <Button
+        onPress={() => agentStore.toggle()}
         aria-expanded={state.open}
         aria-label={state.open ? t.close : t.button}
-        className="fixed bottom-5 left-5 z-[70] hidden items-center gap-2 rounded-full md:inline-flex border border-brand-primary/30 bg-bg-elevated/90 px-4 py-2.5 font-mono text-[10px] tracking-[0.12em] text-text-brand shadow-[0_0_30px_rgba(16,185,129,0.18)] backdrop-blur-xl transition-all hover:border-brand-primary/60 hover:glow sm:bottom-6 sm:left-6"
+        className="fixed bottom-5 left-5 z-[70] hidden items-center gap-2 rounded-full border border-brand-primary/30 bg-bg-elevated/90 px-4 py-2.5 font-mono text-[10px] tracking-[0.12em] text-text-brand shadow-[0_0_30px_rgba(16,185,129,0.18)] backdrop-blur-xl hover:border-brand-primary/60 hover:glow md:inline-flex sm:bottom-6 sm:left-6"
       >
         <span className="relative flex size-2">
           <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand-glow opacity-60" />
@@ -178,15 +178,22 @@ export function AgentConsole() {
         <Bot size={14} />
         {t.button}
         <span className="hidden text-[9px] text-text-muted sm:inline">⌘J</span>
-      </button>
+      </Button>
 
       {state.open && (
-        <section
-          role="dialog"
-          aria-modal="true"
-          aria-label={t.title}
-          className="fixed inset-x-3 bottom-20 z-[95] flex h-[min(72vh,620px)] flex-col overflow-hidden rounded-2xl border border-brand-primary/25 bg-bg-elevated/95 shadow-[0_24px_80px_rgba(0,0,0,0.65)] backdrop-blur-2xl sm:inset-x-auto sm:left-6 sm:bottom-24 sm:w-[min(94vw,460px)]"
+        <Modal.Backdrop
+          isOpen={state.open}
+          onOpenChange={(open) => {
+            if (!open) agentStore.close();
+          }}
+          isDismissable
+          className="z-[95] bg-black/45 backdrop-blur-sm"
         >
+          <Modal.Container placement="center" scroll="inside">
+            <Modal.Dialog
+              aria-label={t.title}
+              className="flex h-[min(72vh,620px)] w-[min(94vw,460px)] flex-col overflow-hidden rounded-2xl border border-brand-primary/25 bg-bg-elevated/95 p-0 shadow-[0_24px_80px_rgba(0,0,0,0.65)] backdrop-blur-2xl"
+            >
           <header className="flex items-center justify-between gap-3 border-b border-brand-primary/15 px-4 py-3">
             <div className="flex items-center gap-2.5">
               <span className="flex gap-1">
@@ -202,14 +209,16 @@ export function AgentConsole() {
               <span className="hidden font-mono text-[9px] uppercase tracking-[0.12em] text-text-muted sm:inline">
                 {t.subtitle}
               </span>
-              <button
-                type="button"
-                onClick={() => agentStore.close()}
+              <Button
+                isIconOnly
+                variant="ghost"
+                size="sm"
+                onPress={() => agentStore.close()}
                 aria-label={t.close}
-                className="rounded-md p-1 text-text-muted transition-colors hover:bg-brand-primary/10 hover:text-text-brand"
+                className="min-h-0 size-7 text-text-muted hover:text-text-brand"
               >
                 <X size={15} />
-              </button>
+              </Button>
             </div>
           </header>
 
@@ -267,14 +276,15 @@ export function AgentConsole() {
 
           <div className="flex flex-wrap gap-1.5 px-4 pb-3">
             {suggestions.map((suggestion) => (
-              <button
+              <Button
                 key={suggestion}
-                type="button"
-                onClick={() => send(suggestion)}
-                className="rounded-full border border-brand-primary/20 px-2.5 py-1 font-mono text-[9px] text-text-secondary transition-colors hover:border-brand-primary/50 hover:text-text-brand"
+                variant="ghost"
+                size="sm"
+                onPress={() => send(suggestion)}
+                className="min-h-0 rounded-full border border-brand-primary/20 px-2.5 py-1 font-mono text-[9px] text-text-secondary hover:border-brand-primary/50 hover:text-text-brand"
               >
                 {suggestion}
-              </button>
+              </Button>
             ))}
           </div>
 
@@ -289,28 +299,33 @@ export function AgentConsole() {
             <label htmlFor="agent-input" className="sr-only">
               {t.placeholder}
             </label>
-            <input
+            <Input
               ref={inputRef}
               id="agent-input"
               value={input}
               onChange={(event) => setInput(event.target.value)}
               placeholder={t.placeholder}
               autoComplete="off"
-              className="min-w-0 flex-1 bg-transparent font-mono text-xs text-text-primary outline-none placeholder:text-text-muted"
+              className="min-w-0 flex-1 border-0 bg-transparent font-mono text-xs shadow-none"
             />
-            <button
+            <Button
               type="submit"
-              disabled={loading || !input.trim()}
+              isIconOnly
+              variant="ghost"
+              size="sm"
+              isDisabled={loading || !input.trim()}
               aria-label={t.send}
-              className="rounded-md p-1.5 text-text-brand transition-colors hover:bg-brand-primary/10 disabled:opacity-30"
+              className="min-h-0 size-7 text-text-brand"
             >
               <Send size={14} />
-            </button>
+            </Button>
           </form>
           <div className="border-t border-brand-primary/10 px-4 py-1.5 text-right font-mono text-[8px] uppercase tracking-[0.12em] text-text-muted">
             {t.hint}
           </div>
-        </section>
+            </Modal.Dialog>
+          </Modal.Container>
+        </Modal.Backdrop>
       )}
     </>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Button } from "@heroui/react";
 import { Maximize2, X } from "lucide-react";
 import { localeNames, type Locale } from "@/lib/i18n";
 import type { PersonalDataRecord } from "@/lib/personal";
@@ -62,15 +63,16 @@ export function PersonalPreview({
             <span className="text-text-muted">
               {localeNames[locale]} · {dirty ? "未保存" : "已保存"}
             </span>
-            <button
-              type="button"
-              onClick={() => setExpanded((value) => !value)}
-              className="inline-flex items-center gap-1 rounded-md px-1.5 py-1 text-text-muted transition-colors hover:bg-brand-primary/10 hover:text-text-brand"
+            <Button
+              variant="ghost"
+              size="sm"
+              onPress={() => setExpanded((value) => !value)}
+              className="min-h-0 px-1.5 py-1 text-[10px] text-text-muted hover:text-text-brand"
               aria-label={expanded ? "退出全屏预览" : "全屏预览"}
             >
               {expanded ? <X size={12} /> : <Maximize2 size={12} />}
               {expanded ? "关闭" : "全屏"}
-            </button>
+            </Button>
           </div>
         </div>
         <iframe

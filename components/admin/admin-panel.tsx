@@ -1,17 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Button, Tabs } from "@heroui/react";
 import { LogOut, UserRound, Mail, Cpu, ArrowUp, ArrowDown } from "lucide-react";
 import { SectionLabel } from "@/components/section-label";
 import { PersonalEditor } from "./personal-editor";
 import { MailEditor } from "./mail-editor";
 import { ModelEditor } from "./model-editor";
-import { cn } from "@/lib/utils";
 import { apiUrl } from "@/lib/api";
 
 type Tab = "personal" | "mail" | "model";
+
+function parseTab(value: string | null): Tab {
+  return value === "mail" || value === "model" ? value : "personal";
+}
 
 export function AdminPanel({
   postCounts,
@@ -19,7 +23,8 @@ export function AdminPanel({
   postCounts: Record<"zh" | "en", number>;
 }) {
   const router = useRouter();
-  const [tab, setTab] = useState<Tab>("personal");
+  const searchParams = useSearchParams();
+  const [tab, setTab] = useState<Tab>(() => parseTab(searchParams.get("tab")));
 
   async function handleLogout() {
     try {
@@ -48,94 +53,75 @@ export function AdminPanel({
           >
             查看网站
           </Link>
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-brand-primary/20 px-3 py-1.5 text-xs text-text-secondary hover:text-text-brand hover:border-brand-primary/40 transition-colors"
+          <Button
+            variant="secondary"
+            size="sm"
+            onPress={handleLogout}
           >
             <LogOut size={12} />
             退出
-          </button>
+          </Button>
         </div>
       </header>
 
-      <nav className="mt-6 flex gap-2 border-b border-brand-primary/10 pb-px">
-        <TabButton
-          active={tab === "personal"}
-          onClick={() => setTab("personal")}
-          icon={<UserRound size={14} />}
-          label="个人信息"
-        />
-        <TabButton
-          active={tab === "mail"}
-          onClick={() => setTab("mail")}
-          icon={<Mail size={14} />}
-          label="邮件通知"
-        />
-        <TabButton
-          active={tab === "model"}
-          onClick={() => setTab("model")}
-          icon={<Cpu size={14} />}
-          label="模型配置"
-        />
-      </nav>
+      <Tabs
+        selectedKey={tab}
+        onSelectionChange={(key) => {
+          const next = parseTab(String(key));
+          setTab(next);
+          router.replace(`/admin?tab=${next}`, { scroll: false });
+          window.requestAnimationFrame(() => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          });
+        }}
+        className="mt-6"
+      >
+        <Tabs.ListContainer className="max-w-xl">
+          <Tabs.List aria-label="管理后台分区">
+            <Tabs.Tab id="personal">
+              <UserRound size={14} />
+              个人信息
+            </Tabs.Tab>
+            <Tabs.Tab id="mail">
+              <Mail size={14} />
+              邮件通知
+            </Tabs.Tab>
+            <Tabs.Tab id="model">
+              <Cpu size={14} />
+              模型配置
+            </Tabs.Tab>
+          </Tabs.List>
+        </Tabs.ListContainer>
 
-      <div className="mt-8">
-        {tab === "personal" ? (
+        <Tabs.Panel id="personal" className="mt-8">
           <PersonalEditor postCounts={postCounts} />
-        ) : tab === "mail" ? (
+        </Tabs.Panel>
+        <Tabs.Panel id="mail" className="mt-8">
           <MailEditor />
-        ) : (
+        </Tabs.Panel>
+        <Tabs.Panel id="model" className="mt-8">
           <ModelEditor />
-        )}
-      </div>
+        </Tabs.Panel>
+      </Tabs>
 
-      <div className="admin-scroll-buttons fixed bottom-6 right-6 z-40 flex flex-col gap-2">
-        <button
-          type="button"
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      <div className="admin-scroll-buttons fixed bottom-6 right-6 z-40 hidden flex-col gap-2 sm:flex">
+        <Button
+          isIconOnly
+          variant="secondary"
           aria-label="回到顶部"
-          className="flex size-10 items-center justify-center rounded-full border border-brand-primary/30 bg-bg-elevated text-text-secondary shadow-[var(--shadow-elevated)] hover:text-text-brand hover:border-brand-primary/60 transition-colors"
+          onPress={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         >
           <ArrowUp size={18} />
-        </button>
-        <button
-          type="button"
-          onClick={() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" })}
+        </Button>
+        <Button
+          isIconOnly
+          variant="secondary"
           aria-label="回到底部"
-          className="flex size-10 items-center justify-center rounded-full border border-brand-primary/30 bg-bg-elevated text-text-secondary shadow-[var(--shadow-elevated)] hover:text-text-brand hover:border-brand-primary/60 transition-colors"
+          onPress={() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" })}
         >
           <ArrowDown size={18} />
-        </button>
+        </Button>
       </div>
     </div>
-  );
-}
-
-function TabButton({
-  active,
-  onClick,
-  icon,
-  label,
-}: {
-  active: boolean;
-  onClick: () => void;
-  icon: React.ReactNode;
-  label: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "inline-flex items-center gap-1.5 px-4 py-2 text-sm border-b-2 -mb-px transition-colors",
-        active
-          ? "border-brand-primary text-text-brand"
-          : "border-transparent text-text-muted hover:text-text-secondary",
-      )}
-    >
-      {icon}
-      {label}
-    </button>
   );
 }
