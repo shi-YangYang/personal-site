@@ -5,6 +5,10 @@
 <h1 align="center">Personal Site</h1>
 
 <p align="center">
+  <a href="./README.zh-CN.md">简体中文</a> · English
+</p>
+
+<p align="center">
   A bilingual personal site, blog, and site-native agent.<br />
   One repository, one container.
 </p>
@@ -36,18 +40,13 @@ There is no database and no external CMS. Profile data, projects, posts, and run
 
 ## Architecture
 
-```mermaid
-flowchart LR
-  B[Browser] --> C[Caddy :3000]
-  C -->|/api/*| F[FastAPI :8000]
-  C -->|pages and assets| N[Next.js :3001]
-  F --> D[(data/ volume)]
-  F --> K[(content/ volume)]
-  N --> D
-  N --> K
-```
+The container runs three processes behind one public port:
 
-The image runs all three processes in one container. `site-data` stores the profile, mail configuration, and view counts; `site-content` stores posts. Both are mounted as volumes in Docker.
+- **Caddy** listens on `3000`, routes `/api/*` to FastAPI, and everything else to Next.js.
+- **FastAPI** handles the agent, contact, views, and admin APIs.
+- **Next.js** renders pages and assets on internal port `3001`.
+
+`site-data` and `site-content` are named Docker volumes. `site-data` stores the profile, mail configuration, view counts, and model configuration; `site-content` stores posts. Both survive container rebuilds.
 
 ## Quick Start
 
