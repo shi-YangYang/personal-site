@@ -30,6 +30,10 @@ services:
       AGENT_LLM_BASE_URL: ${AGENT_LLM_BASE_URL:-}
       AGENT_LLM_API_KEY: ${AGENT_LLM_API_KEY:-}
       AGENT_MODEL: ${AGENT_MODEL:-deepseek-chat}
+      # Optional external retrieval.
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      CSDN_SEARCH_ENABLED: ${CSDN_SEARCH_ENABLED:-true}
+      WEB_FETCH_ENABLED: ${WEB_FETCH_ENABLED:-true}
       # Contact form email notifications.
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-465}

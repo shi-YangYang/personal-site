@@ -25,3 +25,7 @@ COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "false").lower() == "true"
 AGENT_LLM_BASE_URL = os.environ.get("AGENT_LLM_BASE_URL", "").rstrip("/")
 AGENT_LLM_API_KEY = os.environ.get("AGENT_LLM_API_KEY", "")
 AGENT_MODEL = os.environ.get("AGENT_MODEL", "deepseek-chat")
+
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "").strip()
+CSDN_SEARCH_ENABLED = os.environ.get("CSDN_SEARCH_ENABLED", "true").lower() != "false"
+WEB_FETCH_ENABLED = os.environ.get("WEB_FETCH_ENABLED", "true").lower() != "false"

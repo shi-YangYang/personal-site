@@ -32,7 +32,7 @@ There is no database and no external CMS. Profile data, projects, posts, and run
 ## Features
 
 - **Bilingual by default** — Chinese and English share one content model. Sections are real routes such as `/zh/projects` and `/en/about`, not hash links.
-- **LangGraph agent grounded in the site** — A read-only tool graph answers from the profile, projects, experience, and posts with citations. Open it with the `AGENT` control or `⌘J`; local retrieval works without a key, and an OpenAI-compatible LLM is optional. The public endpoint is rate-limited per IP and globally, with server-side keys only. Configure or test the model in `/admin` → 模型配置.
+- **LangGraph agent grounded in the site** — A read-only tool graph answers from the profile, projects, experience, and posts with citations. Open it with the `AGENT` control or `⌘J`; local retrieval works without a key, and an OpenAI-compatible LLM is optional. When configured, the agent can also read your own GitHub/CSDN profiles and fetch a public URL. The public endpoint is rate-limited per IP and globally, with server-side keys only. Configure or test the model in `/admin` → 模型配置.
 - **Terminal with real data** — Press `~` or `⌘K` to open a shell for navigation, view counts, theme, and language. It reads the same content as the rest of the site.
 - **Write in MDX** — Posts support frontmatter, tags, reading time, code highlighting, and optional giscus comments. The `/admin` panel edits the profile, model, and mail settings without a database; posts stay file-based.
 - **No database to operate** — `content/` and `data/` are the source of truth. Backups are plain files.
@@ -92,6 +92,7 @@ Start from [`.env.example`](./.env.example). The most important variables:
 | `AGENT_LLM_BASE_URL`, `AGENT_LLM_API_KEY`, `AGENT_MODEL` | Optional defaults for an OpenAI-compatible model. Can also be saved at runtime from `/admin` → 模型配置. Without a model, local retrieval is used. |
 | `SMTP_*` | Optional contact-form email notifications. |
 | `AGENT_RATE_PER_MIN`, `AGENT_RATE_PER_DAY`, `AGENT_GLOBAL_PER_DAY` | Agent abuse limits. Defaults are intentionally conservative; see `.env.example`. |
+| `GITHUB_TOKEN`, `CSDN_SEARCH_ENABLED`, `WEB_FETCH_ENABLED` | Optional external retrieval tools. GitHub code search needs a token; CSDN search and web fetch can be disabled. |
 
 ## Privacy
 

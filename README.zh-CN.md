@@ -32,7 +32,7 @@ Personal Site 是一个自托管的个人作品集与博客，面向希望掌控
 ## 功能
 
 - **默认双语** — 中文和英文共用一套内容模型。页面是真实路由，例如 `/zh/projects` 和 `/en/about`，不是 hash 链接。
-- **基于站内资料的 LangGraph Agent** — 只读工具图从个人资料、项目、经历和文章中检索答案并附带引用。通过 `AGENT` 按钮或 `⌘J` 打开；没有模型 Key 时使用本地检索，配置 OpenAI 兼容模型后启用工具调用。公开接口按 IP 和全站限流，API Key 只保存在服务端。可在 `/admin` → 模型配置中保存和测试模型。
+- **基于站内资料的 LangGraph Agent** — 只读工具图从个人资料、项目、经历和文章中检索答案并附带引用。通过 `AGENT` 按钮或 `⌘J` 打开；没有模型 Key 时使用本地检索，配置 OpenAI 兼容模型后启用工具调用；也可以读取你的 GitHub/CSDN 主页或抓取公开 URL。公开接口按 IP 和全站限流，API Key 只保存在服务端。可在 `/admin` → 模型配置中保存和测试模型。
 - **读取真实数据的终端** — 按 `~` 或 `⌘K` 打开终端，用于导航、查看阅读量、切换主题和语言。终端读取与站点相同的内容。
 - **使用 MDX 写作** — 文章支持 frontmatter、标签、阅读时间、代码高亮和可选的 giscus 评论。`/admin` 可管理个人资料、模型和邮件设置；文章仍以文件维护。
 - **无需数据库** — `content/` 和 `data/` 是内容与运行时数据的来源，备份就是普通文件。
@@ -92,6 +92,7 @@ pnpm dev
 | `AGENT_LLM_BASE_URL`、`AGENT_LLM_API_KEY`、`AGENT_MODEL` | OpenAI 兼容模型的可选默认值。也可以在 `/admin` → 模型配置中运行时保存。没有模型时使用本地检索。 |
 | `SMTP_*` | 可选的 Contact 邮件通知。 |
 | `AGENT_RATE_PER_MIN`、`AGENT_RATE_PER_DAY`、`AGENT_GLOBAL_PER_DAY` | Agent 防滥用限额。默认值较保守，详见 `.env.example`。 |
+| `GITHUB_TOKEN`、`CSDN_SEARCH_ENABLED`、`WEB_FETCH_ENABLED` | 可选的外部检索工具。GitHub 代码搜索需要 Token；CSDN 搜索和网页抓取可关闭。 |
 
 ## 隐私
 
