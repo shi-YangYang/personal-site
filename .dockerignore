@@ -49,3 +49,7 @@ backend/**/__pycache__
 # Local design docs
 specs
 prototype
+
+# 本地/服务器备份（可能包含旧源码，不能进入构建上下文）
+backups
+backup-*
