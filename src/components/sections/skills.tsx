@@ -4,7 +4,6 @@ import { useT } from "../providers/i18n-provider";
 import { FadeIn } from "../effects/fade-in";
 import { SectionLabel } from "../ui/section-label";
 import { AnimatedNumber } from "../effects/animated-number";
-import { BorderBeam } from "../effects/border-beam";
 import { Code3D } from "../effects/code-3d";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
@@ -36,8 +35,7 @@ export function SkillsSection({
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4">
           {data.skills.map((group, i) => (
             <FadeIn key={group.category} delay={0.1 * i}>
-              <BorderBeam className="rounded-2xl" duration={5} delay={i * 1.2}>
-                <div className="glass rounded-2xl p-6 h-full hover:border-brand-primary/40 transition-colors">
+              <div className="glass rounded-2xl p-6 h-full hover:border-brand-primary/40 transition-colors">
                   <h3 className="text-xs font-mono uppercase tracking-wider text-text-brand mb-5">
                     {group.label}
                   </h3>
@@ -47,7 +45,6 @@ export function SkillsSection({
                     ))}
                   </ul>
                 </div>
-              </BorderBeam>
             </FadeIn>
           ))}
         </div>

@@ -3,7 +3,6 @@
 import { useT } from "../providers/i18n-provider";
 import { FadeIn } from "../effects/fade-in";
 import { SectionLabel } from "../ui/section-label";
-import { BorderBeam } from "../effects/border-beam";
 import { Code3D } from "../effects/code-3d";
 import type { PersonalData } from "@content/data";
 
@@ -37,8 +36,7 @@ export function ExperienceSection({
               <FadeIn key={`${exp.company}-${exp.period}`} delay={0.1 * i}>
                 <div className="relative pl-12 sm:pl-16">
                   <div className="absolute left-4 sm:left-6 top-2 -translate-x-1/2 size-3 rounded-full bg-brand-primary ring-4 ring-bg-base" />
-                  <BorderBeam className="rounded-2xl group-hover:shadow-glow" duration={5} delay={i * 1.2}>
-                    <div className="glass rounded-2xl p-5 sm:p-6 hover:border-brand-primary/40 transition-colors">
+                  <div className="glass rounded-2xl p-5 sm:p-6 hover:border-brand-primary/40 transition-colors">
                       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-2">
                         <span className="text-xs font-mono text-text-brand">
                           {exp.period}
@@ -68,7 +66,6 @@ export function ExperienceSection({
                         ))}
                       </div>
                     </div>
-                  </BorderBeam>
                 </div>
               </FadeIn>
             ))}
