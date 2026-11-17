@@ -59,7 +59,7 @@ cd personal-site
 cp .env.example .env
 # 生产环境请先设置 ADMIN_PASSWORD 和 ADMIN_SESSION_SALT。
 
-docker compose up -d --build
+docker compose --project-directory . -f deploy/docker-compose.yml up -d --build
 ```
 
 打开 [http://localhost:3000/zh](http://localhost:3000/zh)。在通过 `/admin` 或 `data/personal.local.json` 填写个人资料前，站点显示占位内容。
@@ -110,16 +110,16 @@ content/blog/**/_drafts/
 ## 项目结构
 
 ```text
-app/[lang]/          双语页面与分区路由
-app/admin/           Cookie 保护的管理后台
+src/app/[lang]/          双语页面与分区路由
+src/app/admin/           Cookie 保护的管理后台
 backend/             FastAPI：Agent、联系表单、阅读量、管理 API
-components/          UI、分区、终端、Agent 面板
+src/components/      按领域组织：admin、agent、blog、effects、hero、home、layout、providers、sections、terminal、ui
 content/             占位个人资料与 MDX 文章
 data/                运行时数据（gitignored）
-lib/                 内容加载、博客解析、API 客户端
-Caddyfile            公开入口
-Dockerfile           Caddy + Next.js + FastAPI 镜像
-docker-compose.yml   volume、healthcheck、运行时配置
+src/lib/             API/admin/utils 与 content、i18n、site、stores
+deploy/Caddyfile     公开入口
+deploy/Dockerfile    Caddy + Next.js + FastAPI 镜像
+deploy/docker-compose.yml  volume、healthcheck、运行时配置
 ```
 
 Agent 的实现见 [Spec](specs/spec-002-cyber-agent/spec.md) 和 [验收记录](specs/spec-002-cyber-agent/acceptance.md)。
@@ -129,7 +129,7 @@ Agent 的实现见 [Spec](specs/spec-002-cyber-agent/spec.md) 和 [验收记录]
 Docker Compose 是支持的部署方式：
 
 ```bash
-docker compose up -d --build
+docker compose --project-directory . -f deploy/docker-compose.yml up -d --build
 ```
 
 只暴露 `3000` 端口。保留 `site-data` 和 `site-content` 两个 volume；不要执行 `docker compose down -v`。

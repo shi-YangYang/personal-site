@@ -8,7 +8,7 @@
 
 ```yaml
 project_mode: EXISTING   # 本仓库为已有项目
-business_code_dir: app/, components/, lib/
+business_code_dir: src/app/, src/components/, src/lib/
 multi_agent: AUTO        # AUTO | true | false
 package_manager: pnpm
 ```
@@ -21,23 +21,25 @@ package_manager: pnpm
 
 ### 0.1.1 本项目适配（personal-site）
 
-- **项目模式**：`EXISTING`。保留现有 `app/`、`components/`、`lib/` 结构，不因规范接入而迁移目录。
+- **项目模式**：`EXISTING`。保留现有 `src/app/`、`src/components/`、`src/lib/` 结构，不因规范接入而迁移目录。
 - **前端**：Next.js 16 App Router、React 19、TypeScript 5、Tailwind CSS 4、HeroUI 3；包管理器 `pnpm`。
 - **后端**：FastAPI、Python 3.9+、LangGraph、`langchain-openai`；单容器由 Caddy 统一入口。
 - **内容与数据**：`content/` 存放 MDX 与默认资料，`messages/` 存放文案，`data/` 存放运行时数据；无数据库。
-- **业务代码**：`app/`（路由）、`components/`、`lib/`；后端在 `backend/`。
+- **业务代码**：`src/app/`（路由）、`src/components/`、`src/lib/`；后端在 `backend/`。
+- **目录组织**：`src/components/` 按领域分为 admin、agent、blog、effects、hero、home、layout、providers、sections、terminal、ui；`src/lib/` 分为 content、i18n、site、stores 与根级 api/admin/utils；`backend/agent/` 存放 Agent 运行时。
 - **常用命令**：
   - `pnpm dev`：同时启动 FastAPI 与 Next.js。
   - `pnpm lint`、`pnpm build`。
   - 无 typecheck script 时使用 `pnpm exec tsc --noEmit`。
   - 后端编译检查：`backend/.venv/bin/python -m compileall backend`。
-- **部署**：Docker Compose 单容器；`.github/workflows/deploy.yml` 仅手动触发，发布前备份两个 volume。生产数据在 `personal-site_site-data` / `personal-site_site-content`，禁止执行 `docker compose down -v`。
+- **部署**：Docker Compose 单容器，部署文件在 `deploy/`；`.github/workflows/deploy.yml` 仅手动触发，发布前备份两个 volume。生产数据在 `personal-site_site-data` / `personal-site_site-content`，禁止执行 `docker compose down -v`。
 - **发布流程现状**：Deploy 仍通过服务器 `/root/personal-site` 的 `git pull` 发布，尚未改为第 29.2 节要求的固定提交 SHA；发布流程改造需单独任务和用户授权，不得在普通开发中顺手替换。
 - **分支与发布**：`dev` 开发，`main` 发布；通过 `dev → main` PR 合并。CI 在 PR 上运行；部署由用户明确授权后手动触发。
 - **Admin / Agent**：`/admin` 管理个人信息、模型配置和邮件设置；Agent 使用 LangGraph，只读工具，模型配置支持运行时保存。
 - **Specs**：已有 `specs/spec-002-cyber-agent/`；`constitution/`、`specs/README.md`、`specs/_template/` 尚未建立。首次需要正式 Spec 时按第 3、4、9 节补齐，不提前创建空目录；补齐前以 README、`package.json`、代码和本文件为事实来源。
 - **README**：`README.md` 为英文，`README.zh-CN.md` 为简体中文；两者保持同步。架构说明使用文字/列表，不生成 Mermaid、流程图或架构图。
 - **网页内容与信息设计**：以 `.ai/rules/web-design.md` 为准；涉及用户可见界面时必须读取。
+- **重要决策**：汇总见 `.ai/decisions/README.md`；详细记录按日期保存在同目录。
 
 ### 0.2 项目结构（Project Structure）
 

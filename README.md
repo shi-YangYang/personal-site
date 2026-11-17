@@ -59,7 +59,7 @@ cd personal-site
 cp .env.example .env
 # Set ADMIN_PASSWORD and ADMIN_SESSION_SALT before production use.
 
-docker compose up -d --build
+docker compose --project-directory . -f deploy/docker-compose.yml up -d --build
 ```
 
 Open [http://localhost:3000/zh](http://localhost:3000/zh). The site runs with placeholder content until you fill in your own profile through `/admin` or `data/personal.local.json`.
@@ -110,16 +110,16 @@ Only the placeholder files in `content/data/` and the sample posts are committed
 ## Project structure
 
 ```text
-app/[lang]/          Bilingual pages and section routes
-app/admin/           Cookie-gated admin panel
+src/app/[lang]/          Bilingual pages and section routes
+src/app/admin/           Cookie-gated admin panel
 backend/             FastAPI: agent, contact, views, admin API
-components/          UI, sections, terminal, agent console
+src/components/      Domain UI: admin, agent, blog, effects, hero, home, layout, providers, sections, terminal, ui
 content/             Placeholder profile data and MDX posts
 data/                Runtime data (gitignored)
-lib/                 Content loading, blog parsing, API client
-Caddyfile            Public entry point
-Dockerfile           Caddy + Next.js + FastAPI image
-docker-compose.yml   Volumes, healthcheck, runtime configuration
+src/lib/             API/admin/utils plus content, i18n, site, stores
+deploy/Caddyfile     Public entry point
+deploy/Dockerfile    Caddy + Next.js + FastAPI image
+deploy/docker-compose.yml  Volumes, healthcheck, runtime configuration
 ```
 
 The agent implementation is documented in the [spec](specs/spec-002-cyber-agent/spec.md) and [acceptance record](specs/spec-002-cyber-agent/acceptance.md).
@@ -129,7 +129,7 @@ The agent implementation is documented in the [spec](specs/spec-002-cyber-agent/
 Docker Compose is the supported deployment path:
 
 ```bash
-docker compose up -d --build
+docker compose --project-directory . -f deploy/docker-compose.yml up -d --build
 ```
 
 Only port `3000` is exposed. Keep the `site-data` and `site-content` volumes; do not run `docker compose down -v`.
