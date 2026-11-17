@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./public/favicon.svg" width="72" height="72" alt="Personal Site 图标" />
+  <img src="./public/logo.png" width="72" height="72" alt="Personal Site 图标" />
 </p>
 
 <h1 align="center">Personal Site</h1>
