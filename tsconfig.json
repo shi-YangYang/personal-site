@@ -19,7 +19,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./src/*"],
+      "@content/*": ["./content/*"],
+      "@messages/*": ["./messages/*"]
     }
   },
   "include": [

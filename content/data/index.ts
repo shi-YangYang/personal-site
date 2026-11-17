@@ -1,7 +1,7 @@
 import type { Locale } from "@/lib/i18n";
 import { personalZh } from "./personal.zh";
 import { personalEn } from "./personal.en";
-import { readPersonalJson } from "@/lib/personal";
+import { readPersonalJson } from "@/lib/content/personal";
 
 export type PersonalData = typeof personalZh;
 

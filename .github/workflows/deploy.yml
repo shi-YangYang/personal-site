@@ -29,4 +29,4 @@ jobs:
               -v /root/personal-site/backups:/to \
               alpine:3.20 sh -c "mkdir -p /to/$STAMP/content && cp -a /from/. /to/$STAMP/content/"
 
-            docker compose up -d --build
+            docker compose --project-directory /root/personal-site -f /root/personal-site/deploy/docker-compose.yml up -d --build

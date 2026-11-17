@@ -12,8 +12,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field
 
-from . import agent_graph
-from .agent_config import is_llm_configured, mask_agent_config, read_agent_config, write_agent_config
+from .agent import graph as agent_graph
+from .agent.config import is_llm_configured, mask_agent_config, read_agent_config, write_agent_config
 from .auth import (
     has_valid_session,
     is_configured,
@@ -37,9 +37,9 @@ from .content import (
     write_mail_config,
     write_personal,
 )
-from .limits import AgentLimiter
+from .agent.limits import AgentLimiter
 from .mail import send_contact_mail
-from .model_provider import list_models, test_model
+from .agent.model_provider import list_models, test_model
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 log = logging.getLogger("personal-site.api")
