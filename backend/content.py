@@ -335,7 +335,8 @@ def favicon_candidate() -> tuple[Path, str] | None:
         path = DATA_DIR / name
         if path.is_file():
             return path, media_type
-    fallback = PUBLIC_DIR / "favicon.svg"
-    if fallback.is_file():
-        return fallback, "image/svg+xml"
+    for name, media_type in FAVICON_CANDIDATES:
+        path = PUBLIC_DIR / name
+        if path.is_file():
+            return path, media_type
     return None

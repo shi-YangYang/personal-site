@@ -4,7 +4,6 @@ import { useT } from "../providers/i18n-provider";
 import { FadeIn } from "../effects/fade-in";
 import { SectionLabel } from "../ui/section-label";
 import { SpotlightCard } from "../effects/spotlight-card";
-import { BorderBeam } from "../effects/border-beam";
 import { Code3D } from "../effects/code-3d";
 import { MapPin, Briefcase, GraduationCap } from "lucide-react";
 import type { PersonalData } from "@content/data";
@@ -34,18 +33,15 @@ export function AboutSection({
 
         <div className="mt-12 grid grid-cols-1 lg:grid-cols-5 gap-6">
           <FadeIn delay={0.1} className="lg:col-span-3">
-            <BorderBeam className="rounded-2xl" duration={5}>
-              <SpotlightCard className="p-6 sm:p-8 h-full">
+            <SpotlightCard className="p-6 sm:p-8 h-full">
                 <p className="text-text-secondary leading-relaxed text-base sm:text-lg">
                   {data.bio}
                 </p>
               </SpotlightCard>
-            </BorderBeam>
           </FadeIn>
 
           <FadeIn delay={0.2} className="lg:col-span-2">
-            <BorderBeam className="rounded-2xl" duration={5} delay={1}>
-              <SpotlightCard className="p-6 sm:p-8 h-full flex flex-col gap-4">
+            <SpotlightCard className="p-6 sm:p-8 h-full flex flex-col gap-4">
                 <InfoRow
                   icon={<MapPin size={16} />}
                   label={t("about.location")}
@@ -63,7 +59,6 @@ export function AboutSection({
                   value={t("about.background_value")}
                 />
               </SpotlightCard>
-            </BorderBeam>
           </FadeIn>
         </div>
       </div>

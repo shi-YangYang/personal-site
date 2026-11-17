@@ -3,7 +3,6 @@
 import { useT } from "../providers/i18n-provider";
 import { FadeIn } from "../effects/fade-in";
 import { SectionLabel } from "../ui/section-label";
-import { BorderBeam } from "../effects/border-beam";
 import { Code3D } from "../effects/code-3d";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
@@ -30,8 +29,7 @@ export function LinksSection({ data }: { data: PersonalData }) {
         <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {data.friendLinks.map((link, i) => (
             <FadeIn key={link.name} delay={0.05 * i}>
-              <BorderBeam className="rounded-2xl" duration={5} delay={i * 1.2}>
-                <Link
+              <Link
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -51,7 +49,6 @@ export function LinksSection({ data }: { data: PersonalData }) {
                     {link.description}
                   </p>
                 </Link>
-              </BorderBeam>
             </FadeIn>
           ))}
         </div>

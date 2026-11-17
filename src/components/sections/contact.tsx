@@ -8,7 +8,6 @@ import { useToast } from "../providers/toast";
 import { FadeIn } from "../effects/fade-in";
 import { SectionLabel } from "../ui/section-label";
 import { SpotlightCard } from "../effects/spotlight-card";
-import { BorderBeam } from "../effects/border-beam";
 import { Code3D } from "../effects/code-3d";
 import { Send } from "lucide-react";
 
@@ -59,8 +58,7 @@ export function ContactSection({ email }: { email: string }) {
         </FadeIn>
 
         <FadeIn delay={0.15}>
-          <BorderBeam className="rounded-2xl mt-10" duration={5}>
-            <SpotlightCard className="p-6 sm:p-8">
+          <SpotlightCard className="p-6 sm:p-8">
               <form
                 onSubmit={onSubmit}
                 className="space-y-5"
@@ -108,7 +106,6 @@ export function ContactSection({ email }: { email: string }) {
             </div>
           </form>
           </SpotlightCard>
-          </BorderBeam>
         </FadeIn>
       </div>
     </section>

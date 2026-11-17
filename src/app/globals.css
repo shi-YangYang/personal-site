@@ -614,3 +614,50 @@ body:has([data-preview-expanded="true"]) .admin-scroll-buttons {
 .hero-agent-field:focus-within {
   border-color: color-mix(in oklab, var(--brand-primary) 55%, transparent) !important;
 }
+
+/* Rotating border beam: a masked conic gradient travels around all four edges. */
+@property --border-beam-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.border-beam {
+  isolation: isolate;
+}
+
+.border-beam::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: 2px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: conic-gradient(
+    from var(--border-beam-angle),
+    transparent 0deg,
+    transparent 235deg,
+    rgba(52, 211, 153, 0.18) 252deg,
+    rgba(52, 211, 153, 0.95) 300deg,
+    #a7f3d0 320deg,
+    transparent 348deg
+  );
+  filter: drop-shadow(0 0 5px rgba(52, 211, 153, 0.7));
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: border-beam-spin var(--beam-duration, 4s) linear infinite;
+  animation-delay: var(--beam-delay, 0s);
+}
+
+@keyframes border-beam-spin {
+  to {
+    --border-beam-angle: 360deg;
+  }
+}
