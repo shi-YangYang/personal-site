@@ -66,3 +66,7 @@ content/blog/**/_drafts/
 backend/.venv/
 backend/**/__pycache__/
 **/*.pyc
+
+# 部署备份
+/backups/
+/backup-*/
