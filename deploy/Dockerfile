@@ -44,11 +44,15 @@ COPY backend/requirements.txt ./backend/requirements.txt
 RUN --mount=type=cache,target=/root/.cache/pip \
     python -m venv /opt/venv \
   && if [ -n "$PIP_INDEX_URL" ] && [ -n "$PIP_TRUSTED_HOST" ]; then \
-       /opt/venv/bin/pip install --index-url "$PIP_INDEX_URL" --trusted-host "$PIP_TRUSTED_HOST" -r backend/requirements.txt; \
+       /opt/venv/bin/pip install --retries 2 --index-url "$PIP_INDEX_URL" --trusted-host "$PIP_TRUSTED_HOST" -r backend/requirements.txt \
+         || /opt/venv/bin/pip install --retries 2 --index-url https://mirrors.ustc.edu.cn/pypi/simple --trusted-host mirrors.ustc.edu.cn -r backend/requirements.txt \
+         || /opt/venv/bin/pip install --retries 2 --index-url https://pypi.org/simple -r backend/requirements.txt; \
      elif [ -n "$PIP_INDEX_URL" ]; then \
-       /opt/venv/bin/pip install --index-url "$PIP_INDEX_URL" -r backend/requirements.txt; \
+       /opt/venv/bin/pip install --retries 2 --index-url "$PIP_INDEX_URL" -r backend/requirements.txt \
+         || /opt/venv/bin/pip install --retries 2 --index-url https://mirrors.ustc.edu.cn/pypi/simple --trusted-host mirrors.ustc.edu.cn -r backend/requirements.txt \
+         || /opt/venv/bin/pip install --retries 2 --index-url https://pypi.org/simple -r backend/requirements.txt; \
      else \
-       /opt/venv/bin/pip install -r backend/requirements.txt; \
+       /opt/venv/bin/pip install --retries 2 -r backend/requirements.txt; \
      fi
 
 # ---------- Runtime ----------
